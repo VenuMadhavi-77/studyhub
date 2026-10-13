@@ -1,20 +1,24 @@
-# Stage 1: Build JAR with Maven and Eclipse Temurin 21
+# Stage 1: Build the application using Java 21
 FROM eclipse-temurin:21-jdk-alpine AS builder
+
 WORKDIR /build
+
+RUN apk add --no-cache maven
 
 COPY pom.xml .
 COPY src ./src
 
-# Build production jar without running test suite in Docker build
-RUN apk add --no-cache maven && mvn clean package -DskipTests
+RUN mvn clean package -DskipTests
 
-# Stage 2: Minimal JRE 21 Runtime Image
+# Stage 2: Run the application using Java 21 JRE
 FROM eclipse-temurin:21-jre-alpine
+
 WORKDIR /app
 
-# Run as non-root user with permissions on app and uploads
-RUN addgroup -S studyhub && adduser -S studyhub -G studyhub && \
-    mkdir -p /app/uploads && chown -R studyhub:studyhub /app
+RUN addgroup -S studyhub && \
+    adduser -S studyhub -G studyhub && \
+    mkdir -p /app/uploads && \
+    chown -R studyhub:studyhub /app
 
 COPY --from=builder --chown=studyhub:studyhub /build/target/*.jar app.jar
 
@@ -27,6 +31,6 @@ ENV SPRING_PROFILES_ACTIVE=prod \
 EXPOSE 8080
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
-  CMD wget -qO- http://localhost:${PORT:-8080}/actuator/health || exit 1
+    CMD wget -qO- "http://localhost:${PORT:-8080}/actuator/health" || exit 1
 
 ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
