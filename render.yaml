@@ -24,9 +24,9 @@ services:
       - key: DB_HOST
         sync: false
       - key: DB_PORT
-        value: 3306
+        value: 19476
       - key: DB_NAME
-        value: studyhub_db
+        value: defaultdb
       - key: DB_USERNAME
         sync: false
       - key: DB_PASSWORD
