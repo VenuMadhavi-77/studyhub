@@ -80,23 +80,74 @@ DB_SSL_PARAMS=&trustCertificateKeyStoreUrl=file:/app/certs/ca.pem
 
 ---
 
-## 4. Frontend Deployment (Vercel & Netlify)
+## 4. Cloud Deployment (Render & Vercel)
 
-StudyHub includes pre-configured SPA routing fallback rules:
+### Architecture in the Cloud
+- **Backend**: Spring Boot 3 runs on **Render** as a Docker Web Service (`backend/Dockerfile`).
+- **Database**: Free cloud MySQL on **Aiven**, **TiDB Cloud**, or **Railway**.
+- **Frontend**: React 18 runs on **Vercel** or **Render Static Site**.
 
-- **Vercel**: Configured in `frontend/vercel.json`:
-  ```json
-  {
-    "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
-  }
-  ```
-- **Netlify**: Configured in `frontend/public/_redirects`:
-  ```
-  /*    /index.html   200
-  ```
+---
 
-### WebSocket Protocol Resolution
-When deployed behind HTTPS on Vercel or custom domain, StudyHub's `websocket.ts` service automatically selects `wss://` based on `window.location.protocol` or the `VITE_API_URL` prefix.
+### Step 1: Set Up Free Cloud MySQL (Aiven / TiDB)
+1. Go to [aiven.io](https://aiven.io/) or [tidbcloud.com](https://tidbcloud.com/) and create a free MySQL database named `studyhub_db`.
+2. Note your connection details:
+   - Host (e.g. `mysql-xxx.aivencloud.com`)
+   - Port (e.g. `24950` or `3306`)
+   - User (e.g. `avnadmin` or `root`)
+   - Password
+
+---
+
+### Step 2: Deploy Backend on Render (Free)
+1. Log in to [render.com](https://render.com/) with GitHub.
+2. Click **New +** $\rightarrow$ **Web Service**.
+3. Select your repository: **`VenuMadhavi-77/studyhub`**.
+4. Configure:
+   - **Language / Environment**: `Docker`
+   - **Docker Context**: `./backend`
+   - **Dockerfile Path**: `./backend/Dockerfile`
+   - **Plan**: `Free`
+5. Under **Environment Variables**, add:
+   - `SPRING_PROFILES_ACTIVE`: `prod`
+   - `PORT`: `8080`
+   - `STORAGE_LOCAL_PATH`: `/tmp/uploads`
+   - `DB_HOST`: `<your-cloud-mysql-host>`
+   - `DB_PORT`: `<your-cloud-mysql-port>`
+   - `DB_NAME`: `studyhub_db`
+   - `DB_USERNAME`: `<your-db-username>`
+   - `DB_PASSWORD`: `<your-db-password>`
+   - `DB_SSL_MODE`: `PREFERRED`
+   - `JWT_SECRET`: `dGhpc2lzYXZlcnlzZWNyZXRrZXlmb3JzdHVkeWh1YmFwcGxpY2F0aW9uMjAyNmJ5c3ByaW5nYm9vdDM=`
+   - `CORS_ALLOWED_ORIGINS`: `*`
+   - `ADMIN_BOOTSTRAP_PASSWORD`: `<your-chosen-admin-password>`
+   - `GEMINI_API_KEY`: `<optional-google-gemini-key>`
+6. Click **Create Web Service**. Render will build the Docker container and start Tomcat.
+7. Copy your backend URL (e.g. `https://studyhub-backend.onrender.com`).
+
+---
+
+### Step 3: Deploy Frontend on Vercel (Free)
+1. Log in to [vercel.com](https://vercel.com/) with GitHub.
+2. Click **Add New...** $\rightarrow$ **Project**.
+3. Import **`VenuMadhavi-77/studyhub`**.
+4. Configure project settings:
+   - **Framework Preset**: `Vite`
+   - **Root Directory**: Click *Edit* and select **`frontend`**
+   - **Build Command**: `npm run build`
+   - **Output Directory**: `dist`
+5. Under **Environment Variables**, add:
+   - `VITE_API_URL`: `https://studyhub-backend.onrender.com/api/v1` *(replace with your Render backend URL)*
+6. Click **Deploy**. Vercel will build and deploy your React app in ~45 seconds!
+
+---
+
+### Step 4: Alternative: Deploy Both on Render using `render.yaml`
+If you prefer having both services on Render, StudyHub includes a zero-config [`render.yaml`](render.yaml) Blueprint:
+1. Go to [dashboard.render.com/blueprints](https://dashboard.render.com/blueprints).
+2. Click **New Blueprint Instance**.
+3. Select `VenuMadhavi-77/studyhub`.
+4. Enter your MySQL credentials and click **Apply**. Both backend and frontend will be provisioned together automatically!
 
 ---
 

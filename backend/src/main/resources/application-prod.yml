@@ -9,9 +9,9 @@ spring:
       max-file-size: ${STORAGE_MAX_FILE_SIZE_MB:25}MB
       max-request-size: ${STORAGE_MAX_FILE_SIZE_MB:25}MB
   datasource:
-    url: jdbc:mysql://${DB_HOST}:${DB_PORT:3306}/${DB_NAME:studyhub_db}?sslMode=${DB_SSL_MODE:REQUIRED}&serverTimezone=UTC&allowPublicKeyRetrieval=true${DB_SSL_PARAMS:}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:studyhub_db}?sslMode=${DB_SSL_MODE:REQUIRED}&serverTimezone=UTC&allowPublicKeyRetrieval=true${DB_SSL_PARAMS:}}
+    username: ${DB_USERNAME:${SPRING_DATASOURCE_USERNAME:root}}
+    password: ${DB_PASSWORD:${SPRING_DATASOURCE_PASSWORD:}}
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       maximum-pool-size: ${DB_POOL_MAX:10}
