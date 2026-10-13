@@ -33,13 +33,13 @@ INSERT INTO topics (id, subject_id, name, created_at, updated_at) VALUES
 ON DUPLICATE KEY UPDATE name=VALUES(name);
 
 -- 4. Initial Tags
-INSERT INTO tags (id, name, slug, created_at) VALUES
-(1, 'algorithms', 'algorithms', NOW()),
-(2, 'dbms', 'dbms', NOW()),
-(3, 'concurrency', 'concurrency', NOW()),
-(4, 'networking', 'networking', NOW()),
-(5, 'exam-prep', 'exam-prep', NOW()),
-(6, 'cheatsheet', 'cheatsheet', NOW())
+INSERT INTO tags (id, name, created_at) VALUES
+(1, 'algorithms', NOW()),
+(2, 'dbms', NOW()),
+(3, 'concurrency', NOW()),
+(4, 'networking', NOW()),
+(5, 'exam-prep', NOW()),
+(6, 'cheatsheet', NOW())
 ON DUPLICATE KEY UPDATE name=VALUES(name);
 
 -- 5. Demo Faculty and Students (BCrypt hash for password 'Password123!')
