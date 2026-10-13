@@ -1,9 +1,7 @@
 ```sql
--- ==========================================================================
 -- STUDYHUB DEMO SEED DATA (Flyway Migration V2)
--- ==========================================================================
 
--- 1. Initial Academic Departments
+-- 1. Departments
 INSERT INTO departments
     (id, name, code, created_at, updated_at)
 VALUES
@@ -11,11 +9,9 @@ VALUES
     (2, 'Information Technology', 'IT', NOW(), NOW()),
     (3, 'Electronics & Communication Engineering', 'ECE', NOW(), NOW()),
     (4, 'Mechanical Engineering', 'MECH', NOW(), NOW())
-ON DUPLICATE KEY UPDATE
-    name = VALUES(name);
+ON DUPLICATE KEY UPDATE name = VALUES(name);
 
-
--- 2. Core Subjects
+-- 2. Subjects
 INSERT INTO subjects
     (id, department_id, name, code, semester, created_at, updated_at)
 VALUES
@@ -26,9 +22,7 @@ VALUES
     (5, 1, 'Artificial Intelligence', 'CS601', 6, NOW(), NOW()),
     (6, 2, 'Web Technologies & Cloud Computing', 'IT502', 5, NOW(), NOW()),
     (7, 3, 'Digital Signal Processing', 'EC501', 5, NOW(), NOW())
-ON DUPLICATE KEY UPDATE
-    name = VALUES(name);
-
+ON DUPLICATE KEY UPDATE name = VALUES(name);
 
 -- 3. Topics
 INSERT INTO topics
@@ -41,15 +35,11 @@ VALUES
     (5, 3, 'Process Synchronization & Semaphores', NOW(), NOW()),
     (6, 3, 'CPU Scheduling Algorithms & Deadlocks', NOW(), NOW()),
     (7, 4, 'TCP/IP 5-Layer Model & Subnetting', NOW(), NOW())
-ON DUPLICATE KEY UPDATE
-    name = VALUES(name);
+ON DUPLICATE KEY UPDATE name = VALUES(name);
 
-
--- 4. Initial Tags
--- The slug column was removed because it does not exist
--- in the current tags table schema.
-INSERT INTO tags
-    (id, name, created_at)
+-- 4. Tags
+-- The tags table does not contain a slug column.
+INSERT INTO tags (id, name, created_at)
 VALUES
     (1, 'algorithms', NOW()),
     (2, 'dbms', NOW()),
@@ -57,12 +47,11 @@ VALUES
     (4, 'networking', NOW()),
     (5, 'exam-prep', NOW()),
     (6, 'cheatsheet', NOW())
-ON DUPLICATE KEY UPDATE
-    name = VALUES(name);
+ON DUPLICATE KEY UPDATE name = VALUES(name);
 
-
--- 5. Demo Faculty and Students
--- NOTE: Verify the BCrypt hashes before using these accounts.
+-- 5. Demo users
+-- Replace these placeholder hashes with valid BCrypt hashes
+-- before relying on demo login accounts.
 INSERT INTO users
     (id, email, password_hash, full_name, role, status,
      reputation_points, created_at, updated_at)
@@ -70,14 +59,11 @@ VALUES
     (2, 'faculty.sharma@studyhub.edu',
      '$2a$10$7Rz6Z3aN.7cKqG1tF9mF6eXJgP1mF8wXp9q8r7s6t5u4v3w2x1y0z',
      'Prof. Ramesh Sharma', 'FACULTY', 'ACTIVE', 500, NOW(), NOW()),
-
     (3, 'student.priya@studyhub.edu',
      '$2a$10$7Rz6Z3aN.7cKqG1tF9mF6eXJgP1mF8wXp9q8r7s6t5u4v3w2x1y0z',
      'Priya Patel', 'STUDENT', 'ACTIVE', 120, NOW(), NOW()),
-
     (4, 'student.rahul@studyhub.edu',
      '$2a$10$7Rz6Z3aN.7cKqG1tF9mF6eXJgP1mF8wXp9q8r7s6t5u4v3w2x1y0z',
      'Rahul Verma', 'STUDENT', 'ACTIVE', 85, NOW(), NOW())
-ON DUPLICATE KEY UPDATE
-    full_name = VALUES(full_name);
+ON DUPLICATE KEY UPDATE full_name = VALUES(full_name);
 ```
