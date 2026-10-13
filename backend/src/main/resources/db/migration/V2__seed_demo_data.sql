@@ -80,4 +80,4 @@ VALUES
      'Rahul Verma', 'STUDENT', 'ACTIVE', 85, NOW(), NOW())
 ON DUPLICATE KEY UPDATE
     full_name = VALUES(full_name);
-```s
+```
