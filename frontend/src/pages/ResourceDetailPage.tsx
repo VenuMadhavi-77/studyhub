@@ -69,6 +69,28 @@ export const ResourceDetailPage: React.FC = () => {
     }
   };
 
+  const [generatingAiSummary, setGeneratingAiSummary] = useState(false);
+
+  const handleGenerateAiSummary = async () => {
+    if (!resource) return;
+    try {
+      setGeneratingAiSummary(true);
+      const res = await api.post(`/ai/summarize/${resource.id}`);
+      const data = res.data.data;
+      if (data) {
+        setResource({
+          ...resource,
+          aiSummary: data.shortSummary || data.summary,
+          aiKeyPoints: Array.isArray(data.keyPoints) ? data.keyPoints.join(' • ') : undefined,
+        });
+      }
+    } catch (err: any) {
+      console.error('Failed to generate AI summary', err);
+    } finally {
+      setGeneratingAiSummary(false);
+    }
+  };
+
   const handleReviewSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!id || !resource) return;
@@ -261,15 +283,39 @@ export const ResourceDetailPage: React.FC = () => {
       ) : null}
 
       {/* AI Key Points & Revision Summary */}
-      {(resource.aiSummary || resource.aiKeyPoints) && (
-        <div className="p-6 rounded-3xl bg-gradient-to-br from-indigo-50/90 to-violet-50/60 dark:from-slate-900 dark:to-indigo-950/40 border border-indigo-200/70 dark:border-indigo-900/60 space-y-3 shadow-sm">
+      <div className="p-6 rounded-3xl bg-gradient-to-br from-indigo-50/90 to-violet-50/60 dark:from-slate-900 dark:to-indigo-950/40 border border-indigo-200/70 dark:border-indigo-900/60 space-y-3 shadow-sm">
+        <div className="flex items-center justify-between flex-wrap gap-2">
           <div className="flex items-center gap-2 text-indigo-700 dark:text-indigo-300 font-bold text-base">
             <Sparkles size={20} className="text-amber-500" />
             AI Executive Summary & Revision Points
           </div>
-          <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">{resource.aiSummary}</p>
+          {isAuthenticated && (
+            <button
+              onClick={handleGenerateAiSummary}
+              disabled={generatingAiSummary}
+              className="text-xs px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold flex items-center gap-1.5 transition-all shadow-sm hover:shadow disabled:opacity-50"
+            >
+              <Sparkles size={13} className={generatingAiSummary ? 'animate-spin' : ''} />
+              {generatingAiSummary ? 'Analyzing with Gemini...' : (resource.aiSummary ? 'Regenerate with AI' : 'Generate with Gemini AI')}
+            </button>
+          )}
         </div>
-      )}
+        {resource.aiSummary ? (
+          <>
+            <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">{resource.aiSummary}</p>
+            {resource.aiKeyPoints && (
+              <div className="pt-2 border-t border-indigo-100 dark:border-indigo-900/40">
+                <p className="text-xs font-semibold text-indigo-900 dark:text-indigo-200 mb-1">Key Revision Concepts:</p>
+                <p className="text-xs text-slate-600 dark:text-slate-400">{resource.aiKeyPoints}</p>
+              </div>
+            )}
+          </>
+        ) : (
+          <p className="text-xs text-slate-500 dark:text-slate-400 italic">
+            No AI summary generated for this document yet. Click the button above to generate an instant executive summary, key concepts, and exam revision notes powered by Google Gemini.
+          </p>
+        )}
+      </div>
 
       {/* Reviews & Reliability System */}
       <div className="space-y-6">

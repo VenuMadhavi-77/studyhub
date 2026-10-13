@@ -126,9 +126,10 @@ export const UploadResourcePage: React.FC = () => {
       const extracted = res.data.data;
       if (extracted) {
         if (extracted.suggestedTitle) setTitle(extracted.suggestedTitle);
-        if (extracted.summary) setDescription(extracted.summary);
+        if (extracted.extractedSnippet || extracted.summary) setDescription(extracted.extractedSnippet || extracted.summary);
         if (extracted.suggestedSemester) setSemester(extracted.suggestedSemester);
-        if (extracted.resourceType) setResourceType(extracted.resourceType as ResourceType);
+        const resolvedType = extracted.suggestedType || extracted.resourceType;
+        if (resolvedType) setResourceType(resolvedType as ResourceType);
         if (extracted.suggestedTags && Array.isArray(extracted.suggestedTags)) {
           setTagsInput(extracted.suggestedTags.join(', '));
         }
