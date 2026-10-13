@@ -1,142 +1,372 @@
-# StudyHub — AI-Powered Collaborative Academic Resource Sharing Platform
+<div align="center">
 
-[![Spring Boot 3.3.4](https://img.shields.io/badge/Spring%20Boot-3.3.4-brightgreen.svg)](https://spring.io/projects/spring-boot)
-[![Java 21 LTS](https://img.shields.io/badge/Java-21%20LTS-orange.svg)](https://www.oracle.com/java/)
-[![React 18](https://img.shields.io/badge/React-18.3.1-blue.svg)](https://react.dev/)
-[![Gemini AI](https://img.shields.io/badge/AI-Google%20Gemini%202.5%20Flash-purple.svg)](https://ai.google.dev/)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+# 📚 StudyHub
+### AI-Powered Collaborative Academic Resource Sharing Platform
 
-**StudyHub** is a production-grade, enterprise-ready full-stack academic resource platform engineered for university departments, faculty, and students. It integrates Spring Boot 3.3.4, React 18 / TypeScript, Aiven MySQL / JPA, STOMP WebSockets, and Google Gemini 2.5 Flash.
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.3.4-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)](https://spring.io/projects/spring-boot)
+[![Java](https://img.shields.io/badge/Java-21%20LTS-ED8B00?style=for-the-badge&logo=java&logoColor=white)](https://www.oracle.com/java/)
+[![React](https://img.shields.io/badge/React-18.3-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.6-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?style=for-the-badge&logo=mysql&logoColor=white)](https://www.mysql.com/)
+[![Google Gemini](https://img.shields.io/badge/AI-Google%20Gemini-8E44AD?style=for-the-badge&logo=google&logoColor=white)](https://ai.google.dev/)
+[![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
 
----
+> A full-stack, production-grade collaborative academic platform where students upload and peer-review study resources, ask AI-powered academic doubts, and collaborate in real-time whiteboards.
 
-## 🌟 Key Architecture & Capabilities
-
-```
-+-----------------------------------------------------------------------------------+
-|                                React 18 + TypeScript SPA                          |
-|  (Outfit/Inter Typography, Glassmorphism, Axios JWT Interceptor, STOMP WebSockets)|
-+------------------------------------------+----------------------------------------+
-                                           | HTTP REST / WS Handshake
-                                           v
-+-----------------------------------------------------------------------------------+
-|                          Spring Boot 3.3.4 Security & Filter Chain                |
-|  (Bucket4j Rate Limiting -> JwtAuthenticationFilter -> SecurityFilterChain)      |
-+------------------------------------------+----------------------------------------+
-                                           |
-    +--------------------------------------+----------------------------------+
-    |                                      |                                  |
-    v                                      v                                  v
-+-----------------------+     +------------------------+     +----------------------+
-|  Resource & Search    |     |  AI Subsystem          |     |  Collaborative Room  |
-|  JPA Specifications   |     |  Apache PDFBox Text    |     |  STOMP Broadcast     |
-|  Counter Deduplication|     |  Gemini 2.5 Flash JSON |     |  Snapshot Sequence   |
-+-----------+-----------+     +-----------+------------+     +----------+-----------+
-            |                             |                             |
-            +----------------------+------+-----------------------------+
-                                   |
-                                   v
-+-----------------------------------------------------------------------------------+
-|                        Spring Data JPA / Hibernate Layer                          |
-|    (@EntityGraph, Composite Indexes, Optimistic Locking, Flyway Migrations)       |
-+------------------------------------------+----------------------------------------+
-                                           |
-                                           v
-+-----------------------------------------------------------------------------------+
-|                             MySQL Database / Aiven Cloud                          |
-+-----------------------------------------------------------------------------------+
-```
-
-### 1. Robust Security Subsystem
-- **JWT & Refresh Tokens**: Dual-token architecture with SHA-256 hashed refresh token storage in MySQL, automatic rotation on every refresh call, and replay-attack breach detection.
-- **Strict Role-Based Authorization**: `ADMIN`, `FACULTY`, and `STUDENT` role hierarchies enforced at Spring Security layer (`/api/v1/admin/**`) and `@PreAuthorize` method annotations.
-- **Bucket4j Rate Limiting**: Token-bucket algorithm (5 auth attempts/min, 60 global requests/min) guarding against brute-force and DDoS.
-- **Defense in Depth**: PDF magic-byte header validation (`%PDF-`), secure UUID file renaming, and path-traversal sanitation (`..` stripped).
-
-### 2. Google Gemini 2.5 Flash AI Subsystem
-- **PDFBox Text Extraction**: Extracts structured text streams from uploaded course documents up to 50MB.
-- **AI Document Summarizer**: Generates 2-3 paragraph executive overviews with formula/topic extraction.
-- **AI Auto-Categorization**: Analyzes syllabus context to auto-fill title, department, semester, and tags during upload.
-- **AI Doubt Assistant**: Produces educational step-by-step reasoning with key conceptual takeaways.
-- **AI Natural Language Search**: Translates conversational queries into precise JPA Specification filters.
-
-### 3. Synchronous Collaborative Whiteboard
-- **Multi-Peer Vector Canvas**: HTML5 Canvas supporting freehand drawing, rectangles, circles, lines, erasers, and color/thickness selection.
-- **STOMP Over WebSocket**: Live state broadcasting to `/topic/whiteboard.{sessionCode}`.
-- **Snapshot Persistence**: Saves canvas state snapshots to MySQL for instant state restoration upon rejoining.
+</div>
 
 ---
 
-## 🚀 Quickstart Guide
+## 🌟 Features
 
-### Prerequisites
-- Java 21 LTS (or JDK 21+)
-- Maven 3.9+
-- Node.js 20+ and npm
-- Docker & Docker Compose (Optional for containerized run)
+<table>
+<tr>
+<td width="50%">
 
-### Running with Docker Compose
+### 📁 Resource Sharing
+- Upload PDF notes, external links, video resources
+- Peer reliability ratings with Bayesian scoring
+- Department & subject-based taxonomy
+- Admin moderation workflow (Approve / Reject)
+- Smart tag-based search with AI natural language queries
+- Bookmark resources for later
+
+</td>
+<td width="50%">
+
+### 🤖 AI Academic Assistant
+- Powered by **Google Gemini 1.5 Flash**
+- AI Doubt Solver with structured step-by-step answers
+- AI Auto-Categorization for uploaded resources
+- AI-generated summaries & exam revision notes
+- Intelligent natural language search across resources
+- Educational fallback engine when no API key is configured
+
+</td>
+</tr>
+<tr>
+<td>
+
+### 🔒 Enterprise Security
+- JWT access tokens + SHA-256 hashed refresh tokens
+- Refresh token rotation with replay/breach detection
+- Role-based access control (ADMIN / FACULTY / STUDENT)
+- Bucket4j rate limiting (brute-force protection)
+- PDF magic-byte header validation
+- Path-traversal sanitization on file storage
+
+</td>
+<td>
+
+### 🎨 Collaborative Whiteboard
+- Real-time multi-peer canvas via STOMP WebSockets
+- Freehand, rectangle, circle, line & eraser tools
+- Color picker & stroke width controls
+- Session snapshots persisted to MySQL
+- Instant canvas state restoration on rejoin
+
+</td>
+</tr>
+</table>
+
+---
+
+## 🏗️ Architecture Overview
+
+```
+┌──────────────────────────────────────────────────────────────────┐
+│                    React 18 + TypeScript SPA                     │
+│  Vite │ TailwindCSS │ Axios JWT Interceptor │ STOMP WebSockets   │
+└───────────────────────────┬──────────────────────────────────────┘
+                            │  HTTP REST + WebSocket
+                            ▼
+┌──────────────────────────────────────────────────────────────────┐
+│              Spring Boot 3.3.4 Security Filter Chain             │
+│     Bucket4j Rate Limiter → JWT Auth Filter → Spring Security    │
+└──────────┬────────────────┬────────────────────┬────────────────┘
+           │                │                    │
+           ▼                ▼                    ▼
+  ┌─────────────┐  ┌──────────────┐  ┌──────────────────┐
+  │  Resource   │  │ AI Subsystem │  │  Collaborative   │
+  │  & Search   │  │ Gemini Flash │  │  Whiteboard STOMP│
+  │  JPA Specs  │  │ PDFBox Text  │  │  Broadcast       │
+  └──────┬──────┘  └──────┬───────┘  └────────┬─────────┘
+         └────────────────┴──────────────────┘
+                          │
+                          ▼
+┌──────────────────────────────────────────────────────────────────┐
+│           Spring Data JPA / Hibernate / Flyway Migrations        │
+└──────────────────────────────────────────────────────────────────┘
+                          │
+                          ▼
+┌──────────────────────────────────────────────────────────────────┐
+│                 MySQL 8.0 Database (Local / Aiven Cloud)         │
+└──────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer | Technology |
+|:---|:---|
+| **Backend Framework** | Spring Boot 3.3.4, Spring Security 6, Spring Data JPA |
+| **Language** | Java 21 LTS |
+| **Frontend** | React 18.3, TypeScript 5.6, Vite 5 |
+| **Styling** | Tailwind CSS 3, Custom Glassmorphism Design |
+| **AI Engine** | Google Gemini 1.5 Flash REST API |
+| **PDF Processing** | Apache PDFBox 3.0 |
+| **Database** | MySQL 8.0 (Local / Aiven Cloud MySQL) |
+| **ORM & Migrations** | Hibernate, Spring Data JPA, Flyway |
+| **Authentication** | JWT (JJWT 0.12), Refresh Token Rotation |
+| **WebSockets** | Spring STOMP, SockJS |
+| **Rate Limiting** | Bucket4j 8.10 (Token Bucket Algorithm) |
+| **Containerization** | Docker, Docker Compose |
+| **Testing** | JUnit 5, Mockito, MockMvc (41 tests, 100% pass rate) |
+
+---
+
+## 🚀 Quick Start
+
+### Option 1: Docker Compose (Recommended)
+
 ```bash
-# 1. Clone the repository and configure environment variables
-cp .env.example .env
+# 1. Clone the repository
+git clone https://github.com/VenuMadhavi-77/studyhub.git
+cd studyhub
 
-# 2. Build and launch MySQL, Spring Boot Backend, and React Frontend
-docker-compose up --build
+# 2. Copy environment file and configure credentials
+cp .env.example .env
+# (Edit .env to set DB passwords, JWT secret, and optional GEMINI_API_KEY)
+
+# 3. Build and launch all 3 services: MySQL + Spring Boot + React/Nginx
+docker compose up --build
+
+# 4. Verify everything is running
+docker compose ps
 ```
-- **Frontend App**: `http://localhost`
-- **Backend REST API**: `http://localhost:8080/api/v1`
-- **Swagger OpenAPI Docs**: `http://localhost:8080/swagger-ui/index.html`
+
+| Service | URL |
+|:---|:---|
+| **Frontend Web App** | `http://localhost` |
+| **Backend REST API** | `http://localhost:8080/api/v1` |
+| **Swagger OpenAPI Docs** | `http://localhost:8080/swagger-ui/index.html` |
+| **Actuator Health** | `http://localhost:8080/actuator/health` |
 
 ---
 
-### Local Development Setup
+### Option 2: Local Development
 
-#### 1. Backend (Spring Boot 3.3.4)
+#### Backend (Spring Boot)
 ```bash
 cd backend
+# Run tests first (41/41 should pass)
 mvn clean test
+
+# Start the backend (dev profile connects to local MySQL)
 mvn spring-boot:run
 ```
-*Backend runs on `http://localhost:8080`*. Default bootstrapped administrator: `admin@studyhub.edu` / `Admin@123456`.
+> Backend starts on **http://localhost:8080**
 
-#### 2. Frontend (React 18 + Vite)
+#### Frontend (React + Vite)
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
-*Frontend runs on `http://localhost:3000`*.
+> Frontend starts on **http://localhost:3000**
 
 ---
 
-## 🧪 Test Suite Verification
-All backend test suites run cleanly with zero skips:
+### Prerequisites
+
+| Tool | Minimum Version |
+|:---|:---|
+| Java JDK | 21 LTS |
+| Apache Maven | 3.9+ |
+| Node.js | 20+ |
+| MySQL | 8.0 |
+| Docker _(optional)_ | 24+ |
+
+---
+
+## ⚙️ Environment Variables
+
+Copy `.env.example` to `.env` and configure:
+
+```env
+# Database
+DB_HOST=localhost
+DB_PORT=3306
+DB_NAME=studyhub_db
+DB_USERNAME=root
+DB_PASSWORD=your_password
+
+# Security
+JWT_SECRET=your-256-bit-secret-key-minimum-32-characters-long
+
+# AI (Optional — uses educational fallback if empty)
+GEMINI_API_KEY=
+```
+
+> **To enable live Google Gemini AI:** Get a free API key from [Google AI Studio](https://aistudio.google.com/app/apikey) and paste it into `GEMINI_API_KEY`.
+
+---
+
+## 👥 Demo Accounts
+
+| Role | Email | Password |
+|:---|:---|:---|
+| **Admin** | `admin@studyhub.edu` | `AdminStudyHub#2026` |
+| **Student** | `rohan.v@anurag.edu.in` | `Password123#` |
+| **Student** | `meera.p@anurag.edu.in` | `Password123#` |
+
+---
+
+## 🧪 Test Suite
+
 ```bash
 cd backend
 mvn clean test
 ```
-**Results**:
-- `AuthServiceTest` (Registration, login, password validation)
-- `RefreshTokenServiceTest` (Token hashing, rotation, breach defense)
-- `ResourceServiceTest` (File upload, PDF validation, taxonomy mapping)
-- `SearchServiceTest` (JPA Specification dynamic queries)
-- `RatingServiceTest` (Atomic average calculation, anti-self-rating)
-- `DoubtServiceTest` (Accepted answer workflow, reputation points)
-- `AIServiceTest` (Gemini response parsing and fallback resilience)
-- `NotificationServiceTest` (Real-time STOMP routing and DB persistence)
-- `AdminServiceTest` (Content moderation, user account suspension)
-- `WhiteboardServiceTest` (Room generation, sequence snapshot management)
-- `SecurityIntegrationTest` (MockMvc 401 unauthenticated, 403 student access restrictions)
+
+**41 tests, 0 failures, 0 errors:**
+
+| Test Class | Coverage |
+|:---|:---|
+| `AuthServiceTest` | Registration, login, password hashing |
+| `RefreshTokenServiceTest` | Token rotation, breach detection |
+| `ResourceServiceTest` | File upload, PDF validation, taxonomy |
+| `SearchServiceTest` | JPA Specification dynamic queries |
+| `RatingServiceTest` | Bayesian scoring, anti-self-rating |
+| `ReviewServiceTest` | Peer review workflow |
+| `DoubtServiceTest` | Accepted answers, reputation points |
+| `AIServiceTest` | Gemini parsing, fallback resilience |
+| `NotificationServiceTest` | STOMP routing, DB persistence |
+| `AdminServiceTest` | Moderation, user suspension |
+| `WhiteboardServiceTest` | Room generation, snapshot management |
+| `SecurityIntegrationTest` | 401/403 unauthorized access blocks |
+| `ReliabilityFormulaTest` | Bayesian reliability recalculation |
+| `RecommendationServiceTest` | AI-based resource recommendations |
 
 ---
 
-## 🛡️ Technical Interview Defense Guide
+## 📁 Project Structure
 
-1. **Why use DTO records instead of JPA Entities at controller boundaries?**
-   *Exposing JPA entities creates security risks (over-posting / Mass Assignment vulnerabilities), leaks database schema internals, causes LazyInitializationExceptions when serializing un-proxied relations outside transactions, and binds frontend contracts to database tables.*
+```
+studyhub/
+├── backend/                          # Spring Boot 3.3.4 Application
+│   ├── src/main/java/
+│   │   └── com/studyhub/platform/
+│   │       ├── config/               # Security, CORS, JPA configs
+│   │       ├── modules/
+│   │       │   ├── auth/             # JWT auth, refresh tokens, password reset
+│   │       │   ├── resource/         # Upload, search, ratings, bookmarks
+│   │       │   ├── ai/               # Gemini API client, doubt assistant
+│   │       │   ├── taxonomy/         # Departments & subjects
+│   │       │   ├── doubt/            # Doubt forum Q&A
+│   │       │   ├── whiteboard/       # Real-time collaborative canvas
+│   │       │   ├── focus/            # Pomodoro focus timer
+│   │       │   └── admin/            # Admin moderation
+│   │       └── security/             # JWT filters, rate limiting
+│   ├── src/main/resources/
+│   │   ├── db/migration/             # Flyway SQL schema migrations (V1-V4)
+│   │   ├── application.yml           # Main configuration
+│   │   ├── application-dev.yml       # Local dev profile
+│   │   └── application-prod.yml      # Production profile
+│   └── Dockerfile
+│
+├── frontend/                         # React 18 + TypeScript + Vite SPA
+│   ├── src/
+│   │   ├── pages/                    # Route-level page components
+│   │   ├── components/               # Reusable UI components
+│   │   ├── context/                  # AuthContext, NotificationContext
+│   │   ├── services/                 # Axios API service, WebSocket service
+│   │   └── types/                    # Shared TypeScript interfaces
+│   ├── nginx.conf                    # Production Nginx with API reverse-proxy
+│   └── Dockerfile
+│
+├── docker-compose.yml                # Full stack orchestration
+├── .env.example                      # Environment variable template
+├── deploy.sh                         # Automated VPS deployment script
+└── verify_deployment.js              # 16-step end-to-end integration tests
+```
 
-2. **How does the Refresh Token Replay / Breach Defense work?**
-   *Refresh tokens are single-use. When a refresh token is presented, we verify its SHA-256 hash. If a token is reused after already being revoked, the system detects a potential token theft, invalidates the entire refresh token family for that user, and forces immediate re-authentication.*
+---
 
-3. **How are race conditions prevented when computing resource ratings and view counters?**
-   *Ratings use database transactions with atomic aggregate calculations (`AVG(score)`, `COUNT(id)`). View and download counters use an in-memory sliding de-duplication cache (1-hour window per IP/User) to prevent artificial counter inflation.*
+## 🚢 Production Deployment (VPS: AWS EC2 / DigitalOcean / Oracle Cloud)
+
+A one-command automated deployment script is included:
+
+```bash
+# SSH into your Ubuntu 22.04 / 24.04 server and run:
+git clone https://github.com/VenuMadhavi-77/studyhub.git
+cd studyhub
+chmod +x deploy.sh
+./deploy.sh
+```
+
+`deploy.sh` automatically:
+- ✅ Installs Docker & Docker Compose (if not present)
+- ✅ Generates cryptographically secure passwords & JWT secrets
+- ✅ Auto-detects your server's public IP and configures CORS
+- ✅ Builds & launches all 3 Docker containers
+- ✅ Verifies all container health checks
+
+---
+
+## 📊 End-to-End Deployment Verification
+
+Run the 16-step integration test suite to verify the entire platform:
+
+```bash
+node verify_deployment.js
+```
+
+**Expected output: 16/16 PASSED** ✅
+```
+1.  Backend /actuator/health              ✅ UP
+2.  Departments loaded (5 depts)          ✅ PASS
+3.  CSE Subjects (9 subjects)             ✅ PASS
+4.  Student A Registration                ✅ PASS
+5.  Student A Auth (JWT)                  ✅ PASS
+6.  Student B (Reviewer) Auth (JWT)       ✅ PASS
+7.  Admin JWT Auth                        ✅ PASS
+8.  Multipart Resource Upload             ✅ PASS
+9.  Storage File Persisted on Disk        ✅ PASS
+10. Public Search API                     ✅ PASS
+11. Peer Rating & Bayesian Reliability    ✅ PASS
+12. Integrity Rule: Self-Review Blocked   ✅ PASS
+13. Bookmark Action                       ✅ PASS
+14. RBAC: Student blocked from Admin API  ✅ PASS
+15. Admin Moderation Execution            ✅ PASS
+16. AI Academic Assistant Response        ✅ PASS
+=== OVERALL: ALL PASSED (16/16) ===
+```
+
+---
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/amazing-feature`
+3. Commit your changes: `git commit -m 'feat: add amazing feature'`
+4. Push to the branch: `git push origin feature/amazing-feature`
+5. Open a Pull Request
+
+---
+
+## 📄 License
+
+This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for details.
+
+---
+
+<div align="center">
+
+Built with ❤️ for the academic community
+
+**[⭐ Star this repo](https://github.com/VenuMadhavi-77/studyhub)** if you found it helpful!
+
+</div>
