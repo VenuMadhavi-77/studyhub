@@ -1,0 +1,69 @@
+server:
+  port: ${PORT:8080}
+  servlet:
+    context-path: /
+
+spring:
+  servlet:
+    multipart:
+      max-file-size: ${STORAGE_MAX_FILE_SIZE_MB:25}MB
+      max-request-size: ${STORAGE_MAX_FILE_SIZE_MB:25}MB
+  datasource:
+    url: jdbc:mysql://${DB_HOST}:${DB_PORT:3306}/${DB_NAME:studyhub_db}?sslMode=${DB_SSL_MODE:REQUIRED}&serverTimezone=UTC&allowPublicKeyRetrieval=true${DB_SSL_PARAMS:}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: ${DB_POOL_MAX:10}
+      minimum-idle: ${DB_POOL_MIN:2}
+      idle-timeout: 30000
+      max-lifetime: 1800000
+      connection-timeout: 30000
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+        dialect: org.hibernate.dialect.MySQLDialect
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
+
+studyhub:
+  jwt:
+    secret: ${JWT_SECRET}
+    access-expiration-ms: ${JWT_ACCESS_EXPIRATION_MS:900000}
+    refresh-expiration-ms: ${JWT_REFRESH_EXPIRATION_MS:604800000}
+  admin:
+    bootstrap-email: ${ADMIN_BOOTSTRAP_EMAIL:admin@studyhub.edu}
+    bootstrap-password: ${ADMIN_BOOTSTRAP_PASSWORD:AdminStudyHub#2026}
+    bootstrap-name: ${ADMIN_BOOTSTRAP_NAME:System Administrator}
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000,http://localhost:80,https://studyhub.edu}
+  storage:
+    type: ${STORAGE_TYPE:LOCAL}
+    local-path: ${STORAGE_LOCAL_PATH:/app/uploads}
+    max-size-mb: ${STORAGE_MAX_FILE_SIZE_MB:25}
+    s3-endpoint: ${S3_ENDPOINT:}
+    s3-bucket: ${S3_BUCKET:}
+    s3-region: ${S3_REGION:us-east-1}
+    s3-access-key: ${S3_ACCESS_KEY:}
+    s3-secret-key: ${S3_SECRET_KEY:}
+    s3-public-url: ${S3_PUBLIC_URL:}
+  ai:
+    provider: ${AI_PROVIDER:GEMINI}
+    api-key: ${GEMINI_API_KEY:${AI_API_KEY:}}
+    rate-limit-per-minute: ${AI_RATE_LIMIT_PER_MINUTE:15}
+    daily-quota: ${AI_DAILY_QUOTA:100}
+    timeout-seconds: ${AI_TIMEOUT_SECONDS:15}
+
+logging:
+  level:
+    root: INFO
+    com.studyhub: INFO
+    org.springframework.security: WARN
+    org.hibernate.SQL: WARN
