@@ -1,4 +1,3 @@
-```sql
 -- STUDYHUB DEMO SEED DATA (Flyway Migration V2)
 
 -- 1. Departments
@@ -66,4 +65,3 @@ VALUES
      '$2a$10$7Rz6Z3aN.7cKqG1tF9mF6eXJgP1mF8wXp9q8r7s6t5u4v3w2x1y0z',
      'Rahul Verma', 'STUDENT', 'ACTIVE', 85, NOW(), NOW())
 ON DUPLICATE KEY UPDATE full_name = VALUES(full_name);
-```
