@@ -1,160 +1,188 @@
 # StudyHub Production Deployment Guide
 
-This guide describes how to deploy the StudyHub platform (Spring Boot 3.3 / Java 21 backend, MySQL 8 / Aiven Cloud database, and React 18 / Vite / Nginx frontend) for local production-simulation and cloud environments.
+This guide describes how to deploy the StudyHub platform (**Spring Boot 3.3 / Java 21** backend + **React 18 / Vite** frontend) entirely on **Render**, with a free cloud MySQL database.
 
 ---
 
-## 1. Quick Start: Local Full Stack via Docker Compose
+## 1. Architecture Overview
 
-To run the complete platform locally in containerized production mode:
-
-```bash
-# 1. Clone repository & prepare environment
-cp .env.example .env
-
-# 2. Build and launch all services in detached mode
-docker-compose up -d --build
-
-# 3. Verify health
-docker-compose ps
 ```
-
-- **Frontend Web UI**: `http://localhost` (or `http://localhost:80`)
-- **Backend API & Actuator Health**: `http://localhost:8080/actuator/health`
-- **Swagger / OpenAPI**: `http://localhost:8080/swagger-ui.html`
-- **MySQL Database**: `localhost:3306` (`studyhub_db`)
-
----
-
-## 2. Environment Variables Reference Table
-
-| Variable Name | Default Value | Required? | Description |
-| :--- | :--- | :--- | :--- |
-| `SPRING_PROFILES_ACTIVE` | `prod` | Yes | Active Spring profile (`prod`, `dev`, or `local`). |
-| `PORT` | `8080` | No | Port on which the Spring Boot backend listens. |
-| `DB_HOST` | `mysql` | Yes | MySQL server host (e.g., Aiven host, AWS RDS, or local container). |
-| `DB_PORT` | `3306` | Yes | Database connection port (e.g., `24950` for Aiven). |
-| `DB_NAME` | `studyhub_db` | Yes | Database name. |
-| `DB_USERNAME` | `studyhub_user` | Yes | Database user. |
-| `DB_PASSWORD` | - | Yes | Database password. |
-| `DB_SSL_MODE` | `REQUIRED` in prod | No | SSL Mode (`DISABLED`, `REQUIRED`, `VERIFY_CA`). |
-| `DB_SSL_PARAMS` | - | No | Extra JDBC SSL parameters for Aiven CA certificate. |
-| `JWT_SECRET` | - | Yes | 256-bit secret key used for signing JWT access tokens. |
-| `JWT_ACCESS_EXPIRATION_MS` | `900000` (15m) | No | JWT access token validity period in milliseconds. |
-| `JWT_REFRESH_EXPIRATION_MS`| `604800000` (7d) | No | Refresh token validity period in milliseconds. |
-| `ADMIN_BOOTSTRAP_EMAIL` | `admin@studyhub.edu`| No | Superadmin email initialized on first startup. |
-| `ADMIN_BOOTSTRAP_PASSWORD` | `AdminStudyHub#2026`| No | Superadmin initial password. |
-| `CORS_ALLOWED_ORIGINS` | `http://localhost` | Yes | Comma-separated list of allowed web frontend URLs. |
-| `STORAGE_TYPE` | `LOCAL` | No | Storage mechanism: `LOCAL` or `S3`. |
-| `STORAGE_LOCAL_PATH` | `./uploads` | No | Filesystem directory used when `STORAGE_TYPE=LOCAL`. |
-| `S3_ENDPOINT` | - | No | S3 / Cloudflare R2 endpoint URL when `STORAGE_TYPE=S3`. |
-| `S3_BUCKET` | - | No | S3 bucket name. |
-| `S3_REGION` | `us-east-1` | No | S3 region identifier. |
-| `S3_ACCESS_KEY` | - | No | AWS / R2 access key ID. |
-| `S3_SECRET_KEY` | - | No | AWS / R2 secret access key. |
-| `S3_PUBLIC_URL` | - | No | Public CDN / bucket base URL for direct client downloads. |
-| `AI_PROVIDER` | `GEMINI` | No | AI provider engine. |
-| `GEMINI_API_KEY` | - | No | Google Gemini API key for document summaries. |
-| `VITE_API_URL` | `/api/v1` | No | Base API URL configured during frontend build. |
-| `VITE_SHOW_DEMO_LOGIN` | `false` | No | Flag to show/hide 1-click demo logins on the sign-in page. |
-
----
-
-## 3. Connecting to Aiven MySQL Cloud
-
-Aiven requires secure TLS connections. Configure the following variables in `.env`:
-
-```env
-DB_HOST=mysql-xxxx-studyhub.aivencloud.com
-DB_PORT=24950
-DB_NAME=defaultdb
-DB_USERNAME=avnadmin
-DB_PASSWORD=<aiven-secret-password>
-DB_SSL_MODE=REQUIRED
-```
-
-If connecting with strict CA verification:
-```env
-DB_SSL_PARAMS=&trustCertificateKeyStoreUrl=file:/app/certs/ca.pem
+┌──────────────────────────────────────────────────┐
+│                  Render.com                       │
+│                                                   │
+│  ┌─────────────────┐    ┌──────────────────────┐  │
+│  │  studyhub-       │    │  studyhub-frontend   │  │
+│  │  backend         │    │  (Static Site)       │  │
+│  │  (Docker Web     │◄───│  React 18 / Vite     │  │
+│  │   Service)       │    │  dist → Render CDN   │  │
+│  │  Port 8080       │    │                      │  │
+│  └────────┬─────────┘    └──────────────────────┘  │
+│           │                                        │
+└───────────┼────────────────────────────────────────┘
+            │  TLS
+┌───────────▼───────────────┐
+│  Aiven / TiDB Cloud       │
+│  MySQL 8.0 (Free Tier)    │
+│  studyhub_db               │
+└────────────────────────────┘
 ```
 
 ---
 
-## 4. Cloud Deployment (Render & Vercel)
+## 2. Prerequisites
 
-### Architecture in the Cloud
-- **Backend**: Spring Boot 3 runs on **Render** as a Docker Web Service (`backend/Dockerfile`).
-- **Database**: Free cloud MySQL on **Aiven**, **TiDB Cloud**, or **Railway**.
-- **Frontend**: React 18 runs on **Vercel** or **Render Static Site**.
-
----
-
-### Step 1: Set Up Free Cloud MySQL (Aiven / TiDB)
-1. Go to [aiven.io](https://aiven.io/) or [tidbcloud.com](https://tidbcloud.com/) and create a free MySQL database named `studyhub_db`.
-2. Note your connection details:
-   - Host (e.g. `mysql-xxx.aivencloud.com`)
-   - Port (e.g. `24950` or `3306`)
-   - User (e.g. `avnadmin` or `root`)
-   - Password
+| Requirement | Where to get it |
+|:---|:---|
+| GitHub account with your repo | [github.com](https://github.com) |
+| Render account (free) | [render.com](https://render.com) — sign up with GitHub |
+| Cloud MySQL database (free) | [aiven.io](https://aiven.io) or [tidbcloud.com](https://tidbcloud.com) |
+| Google Gemini API key (optional) | [aistudio.google.com](https://aistudio.google.com/apikey) |
 
 ---
 
-### Step 2: Deploy Backend on Render (Free)
-1. Log in to [render.com](https://render.com/) with GitHub.
-2. Click **New +** $\rightarrow$ **Web Service**.
-3. Select your repository: **`VenuMadhavi-77/studyhub`**.
-4. Configure:
-   - **Language / Environment**: `Docker`
+## 3. Step 1 — Set Up Free Cloud MySQL
+
+1. Go to [aiven.io](https://aiven.io/) or [tidbcloud.com](https://tidbcloud.com/) and create a **free MySQL** instance.
+2. Create a database named `studyhub_db`.
+3. Note your connection details:
+   - **Host** (e.g. `mysql-xxx.aivencloud.com`)
+   - **Port** (e.g. `24950` for Aiven, `4000` for TiDB)
+   - **Username** (e.g. `avnadmin` or `root`)
+   - **Password**
+
+---
+
+## 4. Step 2 — Deploy Using Render Blueprint (Recommended)
+
+The easiest method — deploys **both** backend and frontend in one click using the included [`render.yaml`](render.yaml).
+
+1. Go to **[dashboard.render.com/blueprints](https://dashboard.render.com/blueprints)**.
+2. Click **New Blueprint Instance**.
+3. Connect your GitHub repo: `VenuMadhavi-77/studyhub`.
+4. Render will detect `render.yaml` and show two services:
+   - `studyhub-backend` (Docker Web Service)
+   - `studyhub-frontend` (Static Site)
+5. Fill in the prompted environment variables:
+   - `DB_HOST` → your cloud MySQL host
+   - `DB_USERNAME` → your database username
+   - `DB_PASSWORD` → your database password
+   - `GEMINI_API_KEY` → your Google Gemini key (optional)
+   - `VITE_API_URL` → `https://studyhub-backend.onrender.com/api/v1` (replace with your actual backend URL after creation)
+6. Click **Apply**. Both services will be built and deployed automatically.
+
+---
+
+## 5. Step 2 (Alternative) — Deploy Manually on Render
+
+If you prefer manual setup instead of the Blueprint:
+
+### 5a. Backend — Docker Web Service
+
+1. In the Render Dashboard, click **New +** → **Web Service**.
+2. Connect your repository: `VenuMadhavi-77/studyhub`.
+3. Configure:
+   - **Environment**: `Docker`
    - **Docker Context**: `./backend`
    - **Dockerfile Path**: `./backend/Dockerfile`
    - **Plan**: `Free`
-5. Under **Environment Variables**, add:
-   - `SPRING_PROFILES_ACTIVE`: `prod`
-   - `PORT`: `8080`
-   - `STORAGE_LOCAL_PATH`: `/tmp/uploads`
-   - `DB_HOST`: `<your-cloud-mysql-host>`
-   - `DB_PORT`: `<your-cloud-mysql-port>`
-   - `DB_NAME`: `studyhub_db`
-   - `DB_USERNAME`: `<your-db-username>`
-   - `DB_PASSWORD`: `<your-db-password>`
-   - `DB_SSL_MODE`: `PREFERRED`
-   - `JWT_SECRET`: `dGhpc2lzYXZlcnlzZWNyZXRrZXlmb3JzdHVkeWh1YmFwcGxpY2F0aW9uMjAyNmJ5c3ByaW5nYm9vdDM=`
-   - `CORS_ALLOWED_ORIGINS`: `*`
-   - `ADMIN_BOOTSTRAP_PASSWORD`: `<your-chosen-admin-password>`
-   - `GEMINI_API_KEY`: `<optional-google-gemini-key>`
-6. Click **Create Web Service**. Render will build the Docker container and start Tomcat.
-7. Copy your backend URL (e.g. `https://studyhub-backend.onrender.com`).
+4. Add **Environment Variables**:
+
+   | Variable | Value |
+   |:---|:---|
+   | `SPRING_PROFILES_ACTIVE` | `prod` |
+   | `PORT` | `8080` |
+   | `STORAGE_LOCAL_PATH` | `/tmp/uploads` |
+   | `DB_HOST` | `<your-cloud-mysql-host>` |
+   | `DB_PORT` | `<your-cloud-mysql-port>` |
+   | `DB_NAME` | `studyhub_db` |
+   | `DB_USERNAME` | `<your-db-username>` |
+   | `DB_PASSWORD` | `<your-db-password>` |
+   | `DB_SSL_MODE` | `PREFERRED` |
+   | `JWT_SECRET` | *(auto-generated or paste a 256-bit base64 key)* |
+   | `CORS_ALLOWED_ORIGINS` | `https://studyhub-frontend.onrender.com` |
+   | `ADMIN_BOOTSTRAP_PASSWORD` | `<your-chosen-admin-password>` |
+   | `GEMINI_API_KEY` | `<optional-google-gemini-key>` |
+
+5. Click **Create Web Service**. Render will build the Docker image and start Tomcat.
+6. Copy your backend URL (e.g. `https://studyhub-backend.onrender.com`).
+
+### 5b. Frontend — Static Site
+
+1. Click **New +** → **Static Site**.
+2. Connect the same repository.
+3. Configure:
+   - **Root Directory**: `frontend`
+   - **Build Command**: `npm install && npm run build`
+   - **Publish Directory**: `dist`
+4. Add **Environment Variable**:
+
+   | Variable | Value |
+   |:---|:---|
+   | `VITE_API_URL` | `https://studyhub-backend.onrender.com/api/v1` |
+
+5. Under **Redirects / Rewrites**, add a catch-all rewrite:
+   - **Source**: `/*`
+   - **Destination**: `/index.html`
+   - **Action**: `Rewrite`
+6. Click **Create Static Site**.
 
 ---
 
-### Step 3: Deploy Frontend on Vercel (Free)
-1. Log in to [vercel.com](https://vercel.com/) with GitHub.
-2. Click **Add New...** $\rightarrow$ **Project**.
-3. Import **`VenuMadhavi-77/studyhub`**.
-4. Configure project settings:
-   - **Framework Preset**: `Vite`
-   - **Root Directory**: Click *Edit* and select **`frontend`**
-   - **Build Command**: `npm run build`
-   - **Output Directory**: `dist`
-5. Under **Environment Variables**, add:
-   - `VITE_API_URL`: `https://studyhub-backend.onrender.com/api/v1` *(replace with your Render backend URL)*
-6. Click **Deploy**. Vercel will build and deploy your React app in ~45 seconds!
+## 6. Environment Variables Reference
+
+| Variable | Default | Required | Description |
+|:---|:---|:---:|:---|
+| `SPRING_PROFILES_ACTIVE` | `prod` | ✅ | Active Spring profile |
+| `PORT` | `8080` | — | Backend server port |
+| `DB_HOST` | — | ✅ | MySQL server host |
+| `DB_PORT` | `3306` | ✅ | Database port |
+| `DB_NAME` | `studyhub_db` | ✅ | Database name |
+| `DB_USERNAME` | — | ✅ | Database user |
+| `DB_PASSWORD` | — | ✅ | Database password |
+| `DB_SSL_MODE` | `PREFERRED` | — | SSL mode (`DISABLED`, `PREFERRED`, `REQUIRED`) |
+| `JWT_SECRET` | — | ✅ | 256-bit key for signing JWT tokens |
+| `CORS_ALLOWED_ORIGINS` | — | ✅ | Frontend URL (e.g. `https://studyhub-frontend.onrender.com`) |
+| `STORAGE_LOCAL_PATH` | `/tmp/uploads` | — | File upload directory |
+| `GEMINI_API_KEY` | — | — | Google Gemini API key for AI summaries |
+| `VITE_API_URL` | `/api/v1` | ✅ | Backend API base URL (set during frontend build) |
+| `ADMIN_BOOTSTRAP_EMAIL` | `admin@studyhub.edu` | — | Initial admin email |
+| `ADMIN_BOOTSTRAP_PASSWORD` | — | — | Initial admin password |
 
 ---
 
-### Step 4: Alternative: Deploy Both on Render using `render.yaml`
-If you prefer having both services on Render, StudyHub includes a zero-config [`render.yaml`](render.yaml) Blueprint:
-1. Go to [dashboard.render.com/blueprints](https://dashboard.render.com/blueprints).
-2. Click **New Blueprint Instance**.
-3. Select `VenuMadhavi-77/studyhub`.
-4. Enter your MySQL credentials and click **Apply**. Both backend and frontend will be provisioned together automatically!
+## 7. Post-Deployment Verification
+
+After both services are live:
+
+```bash
+# Check backend health
+curl https://studyhub-backend.onrender.com/actuator/health
+
+# Expected response:
+# {"status":"UP"}
+```
+
+Then visit your frontend URL (e.g. `https://studyhub-frontend.onrender.com`) and verify:
+- [ ] Login page loads
+- [ ] Registration works
+- [ ] API calls reach the backend (check browser DevTools → Network tab)
 
 ---
 
-## 5. Security & Production Checklist
+## 8. Important Notes
 
-1. [x] **Non-root execution**: Backend runs as `studyhub:studyhub` (Alpine UID 100); Frontend Nginx runs as `nginx:nginx`.
-2. [x] **Health checks**: Docker containers implement automated health monitoring.
-3. [x] **Database Migrations**: Flyway manages incremental schema evolution (`validate` mode in production).
-4. [x] **Data Seeder Guard**: Seeder is active only under `!prod` profile.
-5. [x] **Audit logs & Rate limiting**: Token bucket filter protects public login and upload endpoints against abuse.
+- **Free Tier Cold Starts**: Render free-tier services spin down after 15 minutes of inactivity. The first request after sleep takes ~30–60 seconds.
+- **File Uploads**: On the free tier, uploaded files are stored in `/tmp/uploads` and will be lost on redeploy. For persistent storage, upgrade to a paid plan or use S3/R2.
+- **CORS**: Make sure `CORS_ALLOWED_ORIGINS` on the backend matches your frontend's exact URL (including `https://`).
+- **Database Migrations**: Flyway runs automatically on startup. The first deploy will create all tables.
+
+---
+
+## 9. Security & Production Checklist
+
+- [x] Non-root container execution (Alpine UID 100)
+- [x] Health check endpoint (`/actuator/health`)
+- [x] Flyway database migration management
+- [x] Data seeder disabled in production (`!prod` profile guard)
+- [x] Rate limiting on login and upload endpoints
+- [x] JWT with refresh token rotation
