@@ -1,9 +1,8 @@
 <div align="center">
 
 # 🎓 StudyHub
-### Enterprise-Grade AI-Powered Collaborative Academic Platform
+### Collaborative Academic Resource Platform with AI Study Assistance
 
-[![Build Status](https://img.shields.io/badge/Build-Passing-10B981?style=for-the-badge&logo=githubactions&logoColor=white)](https://github.com/VenuMadhavi-77/studyhub)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.3.4-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)](https://spring.io/projects/spring-boot)
 [![Java](https://img.shields.io/badge/Java-21%20LTS-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)](https://www.oracle.com/java/)
 [![React](https://img.shields.io/badge/React-18.3-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
@@ -15,187 +14,108 @@
 
 <br/>
 
-**A modern, full-stack collaborative academic ecosystem engineered with Spring Boot 3, React 18, Google Gemini AI, and STOMP WebSockets.**
+**A full-stack web application designed for university departments to share verified study resources, solve academic doubts with AI, and collaborate in real-time study sessions.**
 
-[Key Features](#-core-capabilities) • [Architecture](#-system-architecture) • [Tech Stack](#-technology-stack) • [Quickstart](#-quickstart--installation) • [API Reference](#-api-endpoints-overview) • [Security](#-security--authentication) • [Deployment](#-production-deployment)
+[Live Preview](#-application-preview) • [Core Features](#-core-features) • [Quickstart](#-quickstart--installation) • [AI Integration](#-ai-subsystem-live-vs-fallback) • [Architecture](#-system-architecture) • [Test Suites](#-verification--testing-suites) • [API Directory](#-api-endpoints-overview) • [Deployment](#-production-deployment)
 
 </div>
 
 ---
 
-## 📌 Executive Summary
+## 📸 Application Preview
 
-Modern universities and college departments frequently struggle with fragmented study materials, unverified exam notes, unorganized discussion forums, and a lack of real-time collaborative study spaces. 
-
-**StudyHub** solves these challenges by uniting academic resource management, real-time peer collaboration, and generative AI into a unified platform:
-
-- **Peer-Reviewed Resource Repository**: Verified PDF lecture notes, reference books, past question papers, and syllabus tracking with Bayesian reliability scoring to eliminate spam and low-quality materials.
-- **Generative AI Study Assistant**: Powered by Google Gemini 1.5 Flash to automatically extract key concepts, summarize lecture PDFs, generate exam revision notes, and answer academic doubts 24/7.
-- **Interactive Collaborative Whiteboard**: Real-time canvas with multi-user stroke synchronization over STOMP WebSockets and persistent room state snapshots.
-- **Student Doubt Forum**: StackOverflow-style Q&A with peer upvoting, accepted answer mechanics, and reputation points.
-- **Focus & Gamification**: Integrated Pomodoro focus sessions with department-level weekly leaderboards.
-- **Admin Moderation & RBAC**: Complete moderation lifecycle for review, approval, suspension, and external resource curation.
+<div align="center">
+  <img src="docs/dashboard_preview.png" alt="StudyHub Application Dashboard" width="900" style="border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.25);" />
+  <p><em>StudyHub Student Dashboard: Verified Course Notes, Bayesian Trust Ratings, Gemini AI Quick Assistant, and Live Collaborative Study Rooms</em></p>
+</div>
 
 ---
 
-## 🚀 Core Capabilities
+## 📌 The Problem StudyHub Solves
 
-```
-┌────────────────────────────────────────────────────────────────────────────────────────┐
-│                                   PLATFORM MODULES                                     │
-├─────────────────────┬──────────────────────┬────────────────────┬──────────────────────┤
-│ 📚 Resource Hub     │ 🤖 Gemini AI Suite   │ 🎨 Live Whiteboard │ ⚡ Focus & Doubts    │
-│ • PDF Upload & Stream│ • Instant Summarizer │ • Multi-User STOMP │ • Pomodoro Timer     │
-│ • Bayesian Scoring  │ • PDF Text Extractor │ • Vector Shapes    │ • Dept Leaderboard   │
-│ • Self-Review Block │ • Doubt Explanations │ • Snapshot History │ • Solution Upvoting  │
-│ • Multi-Tag Filters │ • Fallback Engine    │ • PNG Export       │ • In-App Notifs      │
-└─────────────────────┴──────────────────────┴────────────────────┴──────────────────────┘
-```
+In most academic departments, study materials are scattered across unorganized chat groups, drive links, and untracked forums. Students struggle to find verified, high-quality exam notes, while spam and duplicate uploads go unchecked.
 
-### 1. 📚 Academic Resource Engine
-- **Multi-Format Support**: Upload PDF documents, lecture notes, video lectures, and external web resources.
-- **Magic-Byte PDF Validation**: Strictly validates file MIME types and PDF magic bytes (`%PDF-`) at the controller level to prevent malicious uploads.
-- **Bayesian Weighted Reliability**: Computes weighted trust scores using Bayesian averages:
-  $$\text{Reliability} = \frac{v \cdot R + m \cdot C}{v + m}$$
-  where $v$ is the review count, $R$ is the average rating, $m$ is the minimum review threshold ($m=5$), and $C$ is the platform baseline ($C=3.5$).
-- **Anti-Manipulation Integrity**: Strict database-level and service-level rules prevent students from reviewing or upvoting their own uploaded materials.
-
-### 2. 🤖 Gemini AI Subsystem
-- **On-Demand Document Summarization**: Generates executive summaries, key bullet concepts, and high-yield exam revision notes from uploaded PDFs.
-- **Automatic Metadata Extraction**: Analyzes document content using Apache PDFBox and recommends subjects, topics, semester levels, and tags.
-- **24/7 Doubt Assistant**: Context-aware academic assistant that delivers step-by-step mathematical, algorithmic, and theoretical explanations.
-- **Resilient Fallback Mode**: If no Gemini API key is configured, StudyHub automatically activates its built-in structured educational engine, ensuring zero downtime.
-
-### 3. 🎨 Real-Time Collaborative Whiteboard
-- **Low-Latency STOMP / WebSocket Synchronization**: Broadcasts pen strokes, geometric shapes (rectangles, circles, lines), and erasers across all active room participants.
-- **Canvas Snapshot Persistence**: Room hosts can save high-resolution canvas snapshots directly to MySQL and restore state when rejoining.
-- **Room Code Sharing**: Instant 6-character room codes for rapid peer study group sessions.
-
-### 4. ⏱️ Focus Pomodoro & Academic Doubts
-- **Pomodoro Timer**: Configurable study intervals with subject tracking.
-- **Department Leaderboards**: Ranks top students by weekly completed focus minutes.
-- **Discussion Forum**: Threaded Q&A with tag filtering, Markdown support, upvoting, and question author solution acceptance.
+**StudyHub** centralizes departmental academic resources with quality assurance:
+1. **Curated & Peer-Rated Notes**: Every document has a Bayesian-weighted reliability score derived from peer reviews, with built-in protections against self-review manipulation.
+2. **Built-in AI Academic Assistance**: Integrated Google Gemini 1.5 Flash generates instant summaries, key revision takeaways, and answers student doubts with step-by-step explanations.
+3. **Synchronized Study Tools**: Real-time collaborative whiteboard rooms and Pomodoro focus timers keep study groups engaged within the same platform.
 
 ---
 
-## 🏗️ System Architecture
+## ✨ Core Features
 
-StudyHub follows a clean, decoupled **modular monolith** backend paired with a high-performance **React 18 Single-Page Application**.
+<table>
+<tr>
+<td width="50%" valign="top">
 
-```mermaid
-flowchart TD
-    Client["React 18 + Vite SPA\n(TypeScript / TailwindCSS)"]
-    
-    subgraph SpringSecurity ["Spring Boot 3.3.4 Security Filter Chain"]
-        RateLimit["Bucket4j Rate Limiter\n(Token Bucket)"]
-        JWTFilter["JwtAuthenticationFilter\n(Bearer Token)"]
-        SecContext["SecurityContext / RBAC\n(ADMIN, FACULTY, STUDENT)"]
-    end
-    
-    subgraph CoreServices ["Domain Module Subsystems"]
-        AuthMod["Auth & Users\n(Token Rotation)"]
-        ResMod["Resources & Search\n(JPA Specs)"]
-        DoubtMod["Doubt Forum\n(Q&A / Upvotes)"]
-        FocusMod["Focus & Pomodoro\n(Leaderboard)"]
-        WhiteboardMod["Whiteboard\n(STOMP Broker)"]
-        AIMod["AI Engine\n(Gemini 1.5 Flash)"]
-        AdminMod["Admin Moderation\n(Analytics / Audit)"]
-    end
-    
-    subgraph DataStorage ["Persistence Layer"]
-        MySQL[("MySQL 8.0 Database\n(HikariCP Pool)")]
-        DiskStorage[("Local File Storage\n(/uploads/resources)")]
-    end
-    
-    Client -->|HTTP REST / Multipart| RateLimit
-    RateLimit --> JWTFilter
-    JWTFilter --> SecContext
-    
-    Client -.->|WebSocket / STOMP| WhiteboardMod
-    
-    SecContext --> AuthMod
-    SecContext --> ResMod
-    SecContext --> DoubtMod
-    SecContext --> FocusMod
-    SecContext --> WhiteboardMod
-    SecContext --> AIMod
-    SecContext --> AdminMod
-    
-    AuthMod & ResMod & DoubtMod & FocusMod & AdminMod --> MySQL
-    ResMod --> DiskStorage
-    AIMod --> ResMod
-```
+### 📚 Peer-Reviewed Resource Repository
+- **Multi-Format Uploads**: PDF lecture notes, video links, and reference articles.
+- **Magic-Byte Header Validation**: Server verifies genuine `%PDF-` file headers to block malicious uploads (`LocalFileSystemStorageService.java`).
+- **Bayesian Reliability Scoring**: Mathematical weighted averaging prevents score manipulation on new uploads.
+- **Self-Review Prevention**: Integrity check blocks students from reviewing or rating their own uploads (HTTP 400).
+- **Taxonomy Filtering**: Browse by Department, Subject, Semester, and custom tags.
 
----
+</td>
+<td width="50%" valign="top">
 
-## 🛠️ Technology Stack
+### 🤖 Gemini AI Study Assistant
+- **On-Demand Summarization**: Generates executive summaries, key bullet concepts, and exam revision notes for any document.
+- **Document Metadata Extraction**: Analyzes document text via Apache PDFBox to suggest subjects, topics, and relevant tags.
+- **24/7 Academic Doubt Solver**: Context-aware assistant providing step-by-step explanations for engineering & science concepts.
+- **Resilient Fallback Mode**: Functions offline or without an API key using an internal educational knowledge base.
 
-| Layer | Component | Specification | Description |
-|:---|:---|:---|:---|
-| **Backend** | Spring Boot | `v3.3.4` | Enterprise Java application framework |
-| | Java SDK | `Java 21 LTS` | Modern virtual threads, records, pattern matching |
-| | Spring Security | `v6.3` | Stateless JWT authentication & method-level RBAC |
-| | Data Access | `Spring Data JPA / Hibernate 6` | Object-relational mapping with HikariCP pooling |
-| | Rate Limiting | `Bucket4j 8.10` | In-memory token bucket brute-force defense |
-| | PDF Processing| `Apache PDFBox 3.0` | Server-side PDF parsing and text extraction |
-| | Real-Time | `Spring STOMP / SockJS` | Sub-millisecond WebSocket message brokering |
-| **Frontend** | React | `v18.3.1` | Concurrent mode single-page application |
-| | Language | `TypeScript 5.6` | Strict compile-time type safety |
-| | Bundler | `Vite 5.4` | Lightning-fast HMR and optimized production build |
-| | Styling | `Tailwind CSS 3.4` | Custom design system with glassmorphism & dark mode |
-| | Networking | `Axios 1.7` | Auto-refreshing JWT request & response interceptors |
-| | Icons | `Lucide React 0.45` | Modern accessible icon set |
-| **Data & Infra**| Database | `MySQL 8.0` | ACID relational database with indexed schemas |
-| | Containers | `Docker & Docker Compose` | Multi-stage production container builds |
-| | Web Server | `Nginx Alpine` | Reverse proxy and static bundle distribution |
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top">
 
----
+### 🎨 Live Collaborative Whiteboard
+- **Multi-User Canvas**: Real-time pen stroke, shape, and eraser broadcasting over STOMP WebSockets (`/ws-studyhub`).
+- **Canvas State Snapshots**: Room hosts can save high-resolution canvas states to MySQL and restore them when rejoining.
+- **Session Codes**: 6-character room codes for rapid peer study group coordination.
 
-## 🔒 Security & Authentication
+</td>
+<td width="50%" valign="top">
 
-StudyHub implements enterprise-grade zero-trust security practices:
+### ⏱️ Focus Sessions & Doubt Forum
+- **Pomodoro Timer**: Tracks focused study minutes categorized by subject.
+- **Department Leaderboard**: Weekly rankings based on verified focus intervals.
+- **Discussion Forum**: Threaded student Q&A with peer upvoting and author-accepted solution mechanics.
+- **In-App Notifications**: Real-time STOMP alerts for review updates and accepted answers.
 
-1. **Dual-Token JWT Authentication**:
-   - Short-lived Access Tokens (15 minutes).
-   - Long-lived Refresh Tokens (7 days) stored as SHA-256 hashes in MySQL.
-2. **Refresh Token Rotation (RTR) & Breach Detection**:
-   - Every token refresh generates a new cryptographically secure token pair.
-   - If an old/revoked refresh token is replayed, the system detects a breach and **invalidates all active user sessions immediately**.
-3. **Bucket4j Rate Limiting**:
-   - Token-bucket algorithm prevents brute-force attacks on `/api/v1/auth/**` and AI endpoints.
-4. **File Upload Hardening**:
-   - Magic-byte validation (`%PDF-`), random UUID file renaming, and strict directory sandboxing prevent path-traversal attacks.
-5. **CORS & CSRF**:
-   - Stateless JWT design eliminates CSRF vulnerabilities; strict CORS allows only authorized origins.
+</td>
+</tr>
+</table>
 
 ---
 
 ## 🚀 Quickstart & Installation
 
-### Option 1: Docker Compose (Recommended)
+### Option 1: Docker Compose (Fastest Setup)
 
-Run the full production stack (MySQL + Spring Boot + React/Nginx) with a single command:
+Runs the complete application stack (MySQL 8 + Spring Boot 3 + React/Nginx) in isolated containers:
 
 ```bash
 # 1. Clone the repository
 git clone https://github.com/VenuMadhavi-77/studyhub.git
 cd studyhub
 
-# 2. Configure environment file
+# 2. Copy the environment configuration
 cp .env.example .env
 
-# 3. Launch all containers
+# 3. Build and launch all services
 docker compose up --build -d
 
-# 4. Verify running services
+# 4. Check status
 docker compose ps
 ```
 
-Access the services:
-- **Frontend Application**: `http://localhost`
-- **Backend API**: `http://localhost:8080/api/v1`
-- **Interactive Swagger Docs**: `http://localhost:8080/swagger-ui.html`
-- **Health Actuator**: `http://localhost:8080/actuator/health`
+| Service | Address | Notes |
+|:---|:---|:---|
+| **Frontend Web App** | [http://localhost](http://localhost) | Reverse-proxied via Nginx on port 80 |
+| **Backend REST API** | [http://localhost:8080/api/v1](http://localhost:8080/api/v1) | Spring Boot application port |
+| **Swagger OpenAPI Docs** | [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html) | Interactive API exploration |
+| **Health Check** | [http://localhost:8080/actuator/health](http://localhost:8080/actuator/health) | System health probe |
 
 ---
 
@@ -205,114 +125,237 @@ Access the services:
 - **Java JDK 21+** (`java -version`)
 - **Apache Maven 3.9+** (`mvn -v`)
 - **Node.js 20+ & npm** (`node -v`)
-- **MySQL 8.0** running locally on port 3306
+- **MySQL 8.0** running locally on port `3306`
 
-#### 1. Backend Setup
+#### 1. Configure Database
+Create the database in MySQL:
+```sql
+CREATE DATABASE IF NOT EXISTS studyhub_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+```
+
+#### 2. Run the Backend (Spring Boot)
 ```bash
 cd backend
 
-# Execute all 41 test suites
+# Execute test suite (41/41 tests)
 mvn test
 
-# Start the Spring Boot development server
+# Start backend (connects to local MySQL on port 3306)
 mvn spring-boot:run
 ```
-> Backend runs at `http://localhost:8080`
+> The backend boots on **`http://localhost:8080`**.
 
-#### 2. Frontend Setup
+#### 3. Run the Frontend (React + Vite)
 ```bash
 cd frontend
 
 # Install dependencies
 npm install
 
-# Start Vite hot-reloading dev server
+# Start Vite development server
 npm run dev
 ```
-> Frontend runs at `http://localhost:3000`
+> The frontend runs on **`http://localhost:3000`** *(port is explicitly configured in `vite.config.ts`)*.
 
 ---
 
-## ⚙️ Environment Variables Reference
+## 🤖 AI Subsystem: Live vs. Fallback
+
+StudyHub integrates Google Gemini with an automatic fallback architecture:
+
+```
+                          ┌──────────────────────────┐
+                          │   AI Request Initiated   │
+                          └─────────────┬────────────┘
+                                        │
+                         Is GEMINI_API_KEY configured?
+                                       / \
+                                Yes   /   \   No / Offline
+                                     v     v
+                  ┌────────────────────┐ ┌────────────────────┐
+                  │ Google Gemini API  │ │ Built-in Fallback  │
+                  │ (gemini-1.5-flash) │ │ Educational Engine │
+                  └────────────────────┘ └────────────────────┘
+```
+
+- **Live Gemini Mode**: When `GEMINI_API_KEY` is set in `.env`, StudyHub queries Google's `gemini-1.5-flash` model for dynamic document extraction, personalized revision notes, and conversational explanations.
+- **Offline Educational Fallback**: If no API key is provided, the application routes requests to `GeminiFallbackProvider.java`, utilizing structured educational patterns. The platform remains completely usable without third-party API dependencies.
+
+**Enabling Live AI:**
+1. Get a free API key at [Google AI Studio](https://aistudio.google.com/app/apikey).
+2. Add your key to `.env`:
+   ```env
+   GEMINI_API_KEY=your_actual_gemini_api_key_here
+   ```
+3. Restart the backend.
+
+---
+
+## 🏗️ System Architecture
+
+StudyHub utilizes a modular architecture with clear domain boundaries:
+
+```
+┌────────────────────────────────────────────────────────────────────────┐
+│                       React 18 Single-Page App                         │
+│       TypeScript 5.6 │ Tailwind CSS │ Axios JWT │ STOMP Client         │
+└───────────────────────────────────┬────────────────────────────────────┘
+                                    │ HTTP REST / WebSocket
+                                    ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│                   Spring Security 6 Web Filter Chain                   │
+│   Bucket4j RateLimitingFilter ──► JwtAuthenticationFilter ──► RBAC     │
+└───────────────────┬─────────────────┬─────────────────┬────────────────┘
+                    │                 │                 │
+                    ▼                 ▼                 ▼
+             ┌─────────────┐   ┌─────────────┐   ┌─────────────┐
+             │  Resource   │   │ Gemini AI   │   │ Collaborative│
+             │  & Search   │   │ Subsystem   │   │ Whiteboard  │
+             └──────┬──────┘   └──────┬──────┘   └──────┬──────┘
+                    │                 │                 │
+                    └────────────┬────┴─────────────────┘
+                                 │
+                                 ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│                 Spring Data JPA / Hibernate ORM Layer                  │
+└────────────────────────────────┬───────────────────────────────────────┘
+                                 │
+                                 ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│                  MySQL 8.0 Relational Persistence                      │
+└────────────────────────────────────────────────────────────────────────┘
+```
+
+### Bayesian Reliability Rating Formula
+
+To eliminate unfair ratings on new uploads and prevent manipulation, reliability is calculated mathematically in `ReliabilityService.java`:
+
+$$R = \frac{v \cdot \bar{r} + m \cdot C}{v + m}$$
+
+Where:
+- $v$: Number of student reviews for this resource.
+- $\bar{r}$: Average star rating of those reviews ($1.0 - 5.0$).
+- $m$: Confidence threshold parameter ($m = 5$).
+- $C$: Prior baseline rating ($C = 3.5$).
+
+A resource with only a single 5-star review will not falsely display 100% reliability; it smoothly scales toward the true score as more peer reviews accumulate.
+
+---
+
+## 🔒 Security Implementation Details
+
+Rather than relying on abstract buzzwords, StudyHub's security is backed by concrete implementations:
+
+1. **Dual-Token JWT Lifecycle**:
+   - Access tokens expire after 15 minutes (`JWT_ACCESS_EXPIRATION_MS=900000`).
+   - Refresh tokens persist in MySQL as cryptographic SHA-256 hashes (`RefreshToken.java`).
+2. **Refresh Token Rotation (RTR) & Breach Detection**:
+   - Every refresh request generates a new token pair and revokes the previous token.
+   - If an invalidated refresh token is ever re-sent, `RefreshTokenService.java` detects a replay breach and immediately deletes all active tokens for that user account.
+3. **Bucket4j Rate Limiting**:
+   - In-memory token bucket algorithm enforces a 20 request/minute ceiling on authentication and AI endpoints to protect against brute-force attacks (`RateLimitingFilter.java`).
+4. **File Upload Hardening**:
+   - Files are validated by MIME type and genuine `%PDF-` magic-byte inspection.
+   - Files are assigned UUID names and stored outside the public web root to prevent direct execution and path-traversal attacks.
+
+---
+
+## 🧪 Verification & Testing Suites
+
+StudyHub features three distinct, verifiable test layers:
+
+### 1. Backend Unit & Integration Tests (41 Tests)
+Run using Maven in `/backend`:
+```bash
+cd backend
+mvn test
+```
+**Results: 41 Tests Run, 0 Failures, 0 Errors**
+- Covers `AuthServiceTest`, `RefreshTokenServiceTest`, `ResourceServiceTest`, `SearchServiceTest`, `RatingServiceTest`, `ReviewServiceTest`, `DoubtServiceTest`, `AIServiceTest`, `NotificationServiceTest`, `AdminServiceTest`, `WhiteboardServiceTest`, `SecurityIntegrationTest`, `ReliabilityFormulaTest`, and `RecommendationServiceTest`.
+
+### 2. Full-System Diagnostic Suite (39 Assertions)
+Run using Node.js against an active instance:
+```bash
+node debug_suite.js
+```
+**Results: 39 / 39 Endpoints & Workflows Passed**
+- Tests end-to-end user registration, invalid credential rejection, token rotation, PDF multipart uploads, streaming downloads, peer review submission, self-review blocks (400), doubt question creation, answer voting, whiteboard snapshots, Pomodoro timer completion, department leaderboard, and role-based access control (403).
+
+### 3. Quick Deployment Smoke Test (16 Sanity Checks)
+Run using Node.js post-deployment:
+```bash
+node verify_deployment.js
+```
+**Results: 16 / 16 Verification Checkpoints Passed**
+- Validates that server health is UP, database seeding initialized correctly, and essential public & authenticated endpoints respond as expected.
+
+---
+
+## ⚙️ Environment Configuration
+
+Copy `.env.example` to `.env` to configure your instance:
 
 | Variable | Default Value | Description |
 |:---|:---|:---|
-| `DB_HOST` | `localhost` | MySQL hostname or cloud connection endpoint |
+| `DB_HOST` | `localhost` | MySQL host (`mysql` when using Docker Compose) |
 | `DB_PORT` | `3306` | MySQL port |
 | `DB_NAME` | `studyhub_db` | Database schema name |
 | `DB_USERNAME` | `root` | Database username |
 | `DB_PASSWORD` | *(empty)* | Database password |
-| `JWT_SECRET` | *(base64 key)* | 256-bit cryptographically secure secret key |
+| `JWT_SECRET` | *(base64 secret)* | 256-bit HMAC-SHA256 secret key |
 | `JWT_ACCESS_EXPIRATION_MS` | `900000` | Access token lifespan (15 minutes) |
 | `JWT_REFRESH_EXPIRATION_MS`| `604800000` | Refresh token lifespan (7 days) |
-| `GEMINI_API_KEY` | *(optional)* | Google AI Studio API key for Gemini 1.5 Flash |
-| `STORAGE_LOCAL_PATH` | `./uploads` | Local disk directory for uploaded PDF notes |
+| `GEMINI_API_KEY` | *(optional)* | Google AI Studio key for live AI features |
+| `STORAGE_LOCAL_PATH` | `./uploads` | Local directory for uploaded files |
+| `ADMIN_BOOTSTRAP_EMAIL` | `admin@studyhub.edu` | Email for initial administrator account |
+| `ADMIN_BOOTSTRAP_PASSWORD`| *(set in .env)* | Password for initial administrator account |
+
+> ⚠️ **Security Notice:** Change `ADMIN_BOOTSTRAP_PASSWORD` in your `.env` file before launching in any shared or production environment.
 
 ---
 
-## 👥 Seeded Demo Accounts
+## 👥 Seeded Development Accounts
 
-The platform seeds test accounts on initial startup:
+When running in development mode (`application-dev.yml`), the database seeds sample accounts for testing:
 
-| Role | Email Address | Password | Permissions |
+| Account Type | Email Address | Default Password | Scope / Permissions |
 |:---|:---|:---|:---|
-| **System Admin** | `admin@studyhub.edu` | `AdminStudyHub#2026` | Full platform analytics, moderation queue, user management |
-| **Student (CSE)** | `rohan.v@anurag.edu.in` | `Password123#` | Upload resources, participate in whiteboard, ask doubts |
-| **Student (ECE)** | `meera.p@anurag.edu.in` | `Password123#` | Peer review resources, answer doubts, focus sessions |
+| **System Admin** | `admin@studyhub.edu` | *Configured via `.env`* | Platform statistics, moderation queue, user management |
+| **Student (CSE)** | `rohan.v@anurag.edu.in` | `Password123#` | Upload resources, ask doubts, whiteboard collaboration |
+| **Student (ECE)** | `meera.p@anurag.edu.in` | `Password123#` | Review peer resources, answer doubts, focus sessions |
 
 ---
 
 ## 📡 API Endpoints Overview
 
-| Method | Endpoint | Access | Description |
+| Method | Endpoint | Access Level | Description |
 |:---|:---|:---|:---|
-| `POST` | `/api/v1/auth/register` | Public | Student account registration |
-| `POST` | `/api/v1/auth/login` | Public | Credentials authentication & JWT issuance |
+| `POST` | `/api/v1/auth/register` | Public | Register new student account |
+| `POST` | `/api/v1/auth/login` | Public | Authenticate credentials and issue JWT tokens |
 | `POST` | `/api/v1/auth/refresh` | Public | Atomic refresh token rotation |
-| `GET` | `/api/v1/users/me` | Authenticated | Retrieve current user profile |
+| `GET` | `/api/v1/users/me` | Authenticated | Retrieve profile for authenticated user |
 | `GET` | `/api/v1/taxonomy/departments` | Public | List all engineering departments |
 | `GET` | `/api/v1/search/resources` | Public | Dynamic multi-criteria resource search |
-| `POST` | `/api/v1/resources` | Authenticated | Multipart upload with PDF file and JSON metadata |
-| `GET` | `/api/v1/resources/{id}/download` | Authenticated | Secure file streaming download |
-| `POST` | `/api/v1/resources/{id}/reviews` | Authenticated | Submit peer review (Self-review blocked) |
-| `POST` | `/api/v1/doubts` | Authenticated | Ask an academic question |
-| `POST` | `/api/v1/doubts/{id}/answers` | Authenticated | Post answer to a question |
-| `POST` | `/api/v1/whiteboard/sessions` | Authenticated | Create a real-time collaborative canvas room |
-| `POST` | `/api/v1/focus/sessions/start` | Student | Begin Pomodoro focus session |
-| `GET` | `/api/v1/focus/leaderboard` | Authenticated | Department focus leaderboard |
-| `POST` | `/api/v1/ai/doubt-assistant` | Authenticated | AI academic step-by-step doubt assistant |
+| `POST` | `/api/v1/resources` | Authenticated | Multipart upload with file and JSON metadata |
+| `GET` | `/api/v1/resources/{id}/download` | Authenticated | Stream and download file content |
+| `POST` | `/api/v1/resources/{id}/reviews` | Authenticated | Submit peer review (Self-reviews rejected) |
+| `POST` | `/api/v1/doubts` | Authenticated | Post an academic doubt question |
+| `POST` | `/api/v1/doubts/{id}/answers` | Authenticated | Submit answer to a doubt question |
+| `POST` | `/api/v1/whiteboard/sessions` | Authenticated | Create a collaborative whiteboard session |
+| `POST` | `/api/v1/focus/sessions/start` | Student | Begin Pomodoro focus interval |
+| `GET` | `/api/v1/focus/leaderboard` | Authenticated | View department weekly focus leaderboard |
+| `POST` | `/api/v1/ai/doubt-assistant` | Authenticated | Ask AI doubt assistant for explanation |
 | `POST` | `/api/v1/ai/summarize/{id}` | Authenticated | Generate AI executive summary & revision notes |
-| `GET` | `/api/v1/admin/stats` | Admin | Comprehensive platform metrics |
-| `PATCH`| `/api/v1/admin/resources/{id}/moderation`| Admin | Approve or reject uploaded resource |
+| `GET` | `/api/v1/admin/stats` | Admin Only | Platform statistics and metrics |
+| `PATCH`| `/api/v1/admin/resources/{id}/moderation`| Admin Only | Approve or reject uploaded resource |
 
 Full interactive API documentation is accessible via **Swagger UI** at `http://localhost:8080/swagger-ui.html`.
 
 ---
 
-## 🧪 Quality Assurance & Test Verification
-
-StudyHub includes automated unit, integration, and end-to-end verification suites:
-
-### 1. Backend JUnit Suite (41 Tests)
-```bash
-cd backend
-mvn test
-```
-- ✅ **100% Pass Rate (41 / 41 Tests)**
-- Covers authentication, token rotation, Bayesian calculations, file uploads, security boundaries, and AI fallback behavior.
-
-### 2. Full System Diagnostic Audit (39 Tests)
-```bash
-node debug_suite.js
-```
-- ✅ **39 / 39 End-to-End Verification Checkpoints Passed**
-- Validates the complete stack including live database persistence, WebSocket channels, and security gates.
-
----
-
 ## 🚢 Production Deployment
 
-StudyHub includes a one-command automated deployment script [`deploy.sh`](file:///d:/tt-project/tt-project/deploy.sh) for any Ubuntu VPS (AWS EC2, DigitalOcean, Hetzner, Oracle Cloud):
+An automated deployment script [`deploy.sh`](deploy.sh) is provided for Ubuntu VPS hosts (AWS EC2, DigitalOcean, Hetzner, Oracle Cloud):
 
 ```bash
 # SSH into your clean Ubuntu server and run:
@@ -322,11 +365,11 @@ chmod +x deploy.sh
 ./deploy.sh
 ```
 
-**What `deploy.sh` handles automatically:**
-1. Installs Docker Engine & Docker Compose plugins.
-2. Auto-detects public IP and configures production CORS.
-3. Generates high-entropy cryptographic secrets for JWT and MySQL.
-4. Builds multi-stage optimized Docker images.
+**What [`deploy.sh`](deploy.sh) automates:**
+1. Installs Docker Engine & Compose plugin if not already present.
+2. Auto-detects the host public IP address and configures CORS origin headers.
+3. Generates high-entropy cryptographic keys for JWT secrets and database credentials.
+4. Builds multi-stage production Docker containers.
 5. Runs healthchecks and validates container status.
 
 ---
