@@ -22,12 +22,27 @@ export const getBaseUrl = (): string => {
     }
     return url;
   }
-  // In production environment (Render static site or production build)
-  if ((import.meta as any).env?.PROD || (typeof window !== 'undefined' && window.location.hostname.includes('render.com'))) {
-    return 'https://studyhub-backend-hu9p.onrender.com/api/v1';
+
+  // In local development or when accessed via localhost/127.0.0.1, always target local backend
+  if (typeof window !== 'undefined') {
+    const host = window.location.hostname;
+    if (host === 'localhost' || host === '127.0.0.1' || host === '0.0.0.0') {
+      return '/api/v1';
+    }
   }
-  // Local development fallback to Vite proxy
-  return '/api/v1';
+
+  if ((import.meta as any).env?.DEV) {
+    return '/api/v1';
+  }
+
+  // Fallback for cloud deployments
+  return 'https://studyhub-backend-hu9p.onrender.com/api/v1';
+};
+
+export const getConnectionInfo = (): { url: string; isLocal: boolean } => {
+  const url = getBaseUrl();
+  const isLocal = url.startsWith('/') || url.includes('localhost') || url.includes('127.0.0.1');
+  return { url, isLocal };
 };
 
 export const BASE_URL = getBaseUrl();
@@ -98,7 +113,14 @@ api.interceptors.response.use(
         localStorage.removeItem('studyhub_access_token');
         localStorage.removeItem('studyhub_refresh_token');
         localStorage.removeItem('studyhub_user');
-        window.location.href = '/login';
+        // Do not force navigation if already on public pages (register, login, browse, landing)
+        if (typeof window !== 'undefined' && 
+            !window.location.pathname.includes('/login') && 
+            !window.location.pathname.includes('/register') && 
+            !window.location.pathname.includes('/browse') && 
+            window.location.pathname !== '/') {
+          window.location.href = '/login';
+        }
         return Promise.reject(error);
       }
 
@@ -120,7 +142,13 @@ api.interceptors.response.use(
         localStorage.removeItem('studyhub_access_token');
         localStorage.removeItem('studyhub_refresh_token');
         localStorage.removeItem('studyhub_user');
-        window.location.href = '/login';
+        if (typeof window !== 'undefined' && 
+            !window.location.pathname.includes('/login') && 
+            !window.location.pathname.includes('/register') && 
+            !window.location.pathname.includes('/browse') && 
+            window.location.pathname !== '/') {
+          window.location.href = '/login';
+        }
         return Promise.reject(refreshErr);
       } finally {
         isRefreshing = false;

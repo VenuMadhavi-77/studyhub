@@ -11,16 +11,14 @@ public record RegisterRequest(
         String email,
 
         @NotBlank(message = "Password cannot be blank")
-        @Size(min = 8, max = 100, message = "Password must be at least 8 characters long")
+        @Size(min = 6, max = 100, message = "Password must be at least 6 characters long")
         String password,
 
         @NotBlank(message = "Full name cannot be blank")
         @Size(min = 2, max = 100, message = "Full name must be between 2 and 100 characters")
         String fullName,
 
-        @NotNull(message = "Department is required")
         Long departmentId,
 
-        @NotNull(message = "Semester is required")
         Integer semester
 ) {}

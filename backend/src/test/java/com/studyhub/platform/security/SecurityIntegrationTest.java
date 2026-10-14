@@ -68,4 +68,10 @@ class SecurityIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(header().string("Access-Control-Allow-Origin", "https://studyhub-frontend-yxlr.onrender.com"));
     }
+
+    @Test
+    void searchResourcesEndpoint_ShouldBeAccessibleWithoutAuth() throws Exception {
+        mockMvc.perform(get("/api/v1/search/resources"))
+                .andExpect(status().isOk());
+    }
 }
