@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
@@ -9,8 +10,6 @@ import {
   Mail,
   Lock,
   User,
-  GraduationCap,
-  Sparkles
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { Department } from '../types';
@@ -19,21 +18,59 @@ import api from '../services/api';
 export const RegisterPage: React.FC = () => {
   const navigate = useNavigate();
   const { register } = useAuth();
+
   const [departments, setDepartments] = useState<Department[]>([]);
-  
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState('STUDENT');
+  const [role] = useState('STUDENT');
   const [departmentId, setDepartmentId] = useState<number | ''>('');
   const [semester, setSemester] = useState<number | ''>('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [departmentsLoading, setDepartmentsLoading] = useState(true);
 
   useEffect(() => {
-    api.get('/taxonomy/departments')
-      .then((res) => setDepartments(res.data.data || []))
-      .catch((err) => console.error('Failed to load departments', err));
+    let cancelled = false;
+
+    const loadDepartments = async () => {
+      setDepartmentsLoading(true);
+
+      try {
+        const response = await api.get('/taxonomy/departments');
+
+        console.log('Departments API response:', response.data);
+
+        const data = response.data?.data;
+
+        if (!Array.isArray(data)) {
+          throw new Error('Unexpected departments response format');
+        }
+
+        if (!cancelled) {
+          setDepartments(data);
+        }
+      } catch (err) {
+        console.error('Failed to load departments:', err);
+
+        if (!cancelled) {
+          setDepartments([]);
+          setError(
+            'Unable to load departments. Please refresh the page and try again.'
+          );
+        }
+      } finally {
+        if (!cancelled) {
+          setDepartmentsLoading(false);
+        }
+      }
+    };
+
+    loadDepartments();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -56,16 +93,17 @@ export const RegisterPage: React.FC = () => {
     }
 
     setLoading(true);
+
     try {
       const user = await register(
-        fullName.trim(), 
-        email.trim(), 
-        password, 
+        fullName.trim(),
+        email.trim(),
+        password,
         role,
         Number(departmentId),
         Number(semester)
       );
-      
+
       if (user.role === 'ADMIN') {
         navigate('/admin');
       } else {
@@ -73,13 +111,16 @@ export const RegisterPage: React.FC = () => {
       }
     } catch (err: any) {
       const resp = err.response?.data;
+
       if (resp?.details && typeof resp.details === 'object') {
         const firstError = Object.values(resp.details)[0];
         setError(String(firstError));
       } else if (resp?.message) {
         setError(resp.message);
       } else {
-        setError('Registration failed. Institutional email may already be registered.');
+        setError(
+          'Registration failed. Please check your details and try again.'
+        );
       }
     } finally {
       setLoading(false);
@@ -89,15 +130,17 @@ export const RegisterPage: React.FC = () => {
   return (
     <div className="min-h-[calc(100vh-4.25rem)] flex items-center justify-center p-4 sm:p-6 lg:p-8">
       <div className="max-w-4xl w-full grid grid-cols-1 md:grid-cols-2 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-2xl overflow-hidden">
-        
-        {/* Left: EdTech Brand Value Banner */}
+
+        {/* Left: Branding */}
         <div className="p-8 sm:p-10 bg-gradient-to-br from-indigo-900 via-indigo-800 to-violet-950 text-white flex flex-col justify-between relative overflow-hidden">
           <div className="space-y-6 relative z-10">
             <div className="flex items-center gap-2.5">
               <div className="w-10 h-10 rounded-2xl bg-white/15 backdrop-blur-md flex items-center justify-center border border-white/20">
                 <BookOpen size={22} className="text-amber-400" />
               </div>
-              <span className="text-xl font-extrabold font-heading tracking-tight">StudyHub</span>
+              <span className="text-xl font-extrabold font-heading tracking-tight">
+                StudyHub
+              </span>
             </div>
 
             <div className="space-y-2">
@@ -105,7 +148,9 @@ export const RegisterPage: React.FC = () => {
                 Join the Campus Learning Community
               </h2>
               <p className="text-xs sm:text-sm text-indigo-200 leading-relaxed">
-                Create your student profile with your department and semester to get automated custom recommendations, note sharing, and study room access.
+                Create your student profile with your department and semester
+                to get automated custom recommendations, note sharing, and
+                study room access.
               </p>
             </div>
 
@@ -132,14 +177,15 @@ export const RegisterPage: React.FC = () => {
             </Link>
           </div>
 
-          {/* Background Glow */}
           <div className="absolute -bottom-16 -right-16 w-64 h-64 rounded-full bg-indigo-500/20 blur-3xl pointer-events-none" />
         </div>
 
         {/* Right: Registration Form */}
         <div className="p-8 sm:p-10 flex flex-col justify-center space-y-5 bg-white dark:bg-slate-900">
           <div className="space-y-1">
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white font-heading">Student Registration</h2>
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white font-heading">
+              Student Registration
+            </h2>
             <p className="text-xs text-slate-500 dark:text-slate-400">
               Fill in your details to start learning
             </p>
@@ -183,13 +229,27 @@ export const RegisterPage: React.FC = () => {
 
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Department</label>
+                <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                  Department
+                </label>
                 <select
+                  required
                   value={departmentId}
-                  onChange={(e) => setDepartmentId(e.target.value ? Number(e.target.value) : '')}
-                  className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 focus:border-indigo-500 focus:outline-none"
+                  disabled={departmentsLoading || departments.length === 0}
+                  onChange={(e) =>
+                    setDepartmentId(
+                      e.target.value ? Number(e.target.value) : ''
+                    )
+                  }
+                  className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 focus:border-indigo-500 focus:outline-none disabled:opacity-60"
                 >
-                  <option value="">Select Dept</option>
+                  <option value="">
+                    {departmentsLoading
+                      ? 'Loading departments...'
+                      : departments.length === 0
+                        ? 'No departments available'
+                        : 'Select Dept'}
+                  </option>
                   {departments.map((d) => (
                     <option key={d.id} value={d.id}>
                       {d.code} - {d.name}
@@ -199,10 +259,15 @@ export const RegisterPage: React.FC = () => {
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Semester</label>
+                <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                  Semester
+                </label>
                 <select
+                  required
                   value={semester}
-                  onChange={(e) => setSemester(e.target.value ? Number(e.target.value) : '')}
+                  onChange={(e) =>
+                    setSemester(e.target.value ? Number(e.target.value) : '')
+                  }
                   className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 focus:border-indigo-500 focus:outline-none"
                 >
                   <option value="">Semester</option>
@@ -222,6 +287,7 @@ export const RegisterPage: React.FC = () => {
               <input
                 type="password"
                 required
+                minLength={8}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
@@ -231,10 +297,14 @@ export const RegisterPage: React.FC = () => {
 
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || departmentsLoading || departments.length === 0}
               className="w-full py-2.5 rounded-xl font-bold text-sm text-white bg-indigo-600 hover:bg-indigo-700 shadow-md shadow-indigo-600/30 transition-transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-60 flex items-center justify-center gap-2 mt-3"
             >
-              {loading ? <RefreshCw className="animate-spin" size={16} /> : <UserPlus size={16} />}
+              {loading ? (
+                <RefreshCw className="animate-spin" size={16} />
+              ) : (
+                <UserPlus size={16} />
+              )}
               {loading ? 'Creating Account...' : 'Create Student Account'}
             </button>
           </form>
@@ -246,7 +316,6 @@ export const RegisterPage: React.FC = () => {
             </Link>
           </div>
         </div>
-
       </div>
     </div>
   );
