@@ -11,7 +11,9 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -47,5 +49,23 @@ class SecurityIntegrationTest {
     void publicTaxonomyEndpoint_ShouldBeAccessibleWithoutAuth() throws Exception {
         mockMvc.perform(get("/api/v1/taxonomy/departments"))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void optionsPreflight_ToTaxonomyEndpoint_ShouldReturnOkWithCorsHeaders() throws Exception {
+        mockMvc.perform(options("/api/v1/taxonomy/departments")
+                        .header("Origin", "https://studyhub-frontend-yxlr.onrender.com")
+                        .header("Access-Control-Request-Method", "GET")
+                        .header("Access-Control-Request-Headers", "authorization,content-type"))
+                .andExpect(status().isOk())
+                .andExpect(header().string("Access-Control-Allow-Origin", "https://studyhub-frontend-yxlr.onrender.com"));
+    }
+
+    @Test
+    void getTaxonomyEndpoint_WithRenderOrigin_ShouldReturnOk() throws Exception {
+        mockMvc.perform(get("/api/v1/taxonomy/departments")
+                        .header("Origin", "https://studyhub-frontend-yxlr.onrender.com"))
+                .andExpect(status().isOk())
+                .andExpect(header().string("Access-Control-Allow-Origin", "https://studyhub-frontend-yxlr.onrender.com"));
     }
 }

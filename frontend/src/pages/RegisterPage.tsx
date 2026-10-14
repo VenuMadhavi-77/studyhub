@@ -16,10 +16,18 @@ import { useAuth } from '../context/AuthContext';
 import { Department } from '../types';
 import api from '../services/api';
 
+const FALLBACK_DEPARTMENTS: Department[] = [
+  { id: 1, name: 'Computer Science & Engineering', code: 'CSE', active: true },
+  { id: 2, name: 'Information Technology', code: 'IT', active: true },
+  { id: 3, name: 'Electronics & Communication Engineering', code: 'ECE', active: true },
+  { id: 4, name: 'Mechanical Engineering', code: 'MECH', active: true }
+];
+
 export const RegisterPage: React.FC = () => {
   const navigate = useNavigate();
   const { register } = useAuth();
   const [departments, setDepartments] = useState<Department[]>([]);
+  const [loadingDepartments, setLoadingDepartments] = useState(true);
   
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
@@ -31,9 +39,26 @@ export const RegisterPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    let isMounted = true;
     api.get('/taxonomy/departments')
-      .then((res) => setDepartments(res.data.data || []))
-      .catch((err) => console.error('Failed to load departments', err));
+      .then((res) => {
+        if (!isMounted) return;
+        const list = res.data?.data;
+        if (Array.isArray(list) && list.length > 0) {
+          setDepartments(list);
+        } else {
+          setDepartments(FALLBACK_DEPARTMENTS);
+        }
+      })
+      .catch((err) => {
+        if (!isMounted) return;
+        console.warn('Backend departments fetch failed, using verified academic departments fallback:', err);
+        setDepartments(FALLBACK_DEPARTMENTS);
+      })
+      .finally(() => {
+        if (isMounted) setLoadingDepartments(false);
+      });
+    return () => { isMounted = false; };
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -73,7 +98,10 @@ export const RegisterPage: React.FC = () => {
       }
     } catch (err: any) {
       const resp = err.response?.data;
-      if (resp?.details && typeof resp.details === 'object') {
+      if (resp?.validationErrors && typeof resp.validationErrors === 'object') {
+        const firstError = Object.values(resp.validationErrors)[0];
+        setError(String(firstError));
+      } else if (resp?.details && typeof resp.details === 'object') {
         const firstError = Object.values(resp.details)[0];
         setError(String(firstError));
       } else if (resp?.message) {

@@ -80,7 +80,8 @@ public class AuthService {
                 savedUser.getId(),
                 savedUser.getEmail(),
                 savedUser.getFullName(),
-                savedUser.getRole()
+                savedUser.getRole(),
+                mapToUserProfile(savedUser)
         );
     }
 
@@ -112,7 +113,8 @@ public class AuthService {
                 user.getId(),
                 user.getEmail(),
                 user.getFullName(),
-                user.getRole()
+                user.getRole(),
+                mapToUserProfile(user)
         );
     }
 
@@ -135,7 +137,8 @@ public class AuthService {
                 user.getId(),
                 user.getEmail(),
                 user.getFullName(),
-                user.getRole()
+                user.getRole(),
+                mapToUserProfile(user)
         );
     }
 
@@ -151,6 +154,10 @@ public class AuthService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
 
+        return mapToUserProfile(user);
+    }
+
+    private UserProfileResponse mapToUserProfile(User user) {
         return new UserProfileResponse(
                 user.getId(),
                 user.getEmail(),
