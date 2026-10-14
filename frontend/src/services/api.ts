@@ -13,7 +13,28 @@ import {
   AdminStats
 } from '../types';
 
-const BASE_URL = (import.meta as any).env?.VITE_API_URL || '/api/v1';
+export const getBaseUrl = (): string => {
+  const envUrl = (import.meta as any).env?.VITE_API_URL;
+  if (envUrl && typeof envUrl === 'string' && envUrl.trim() !== '') {
+    let url = envUrl.trim().replace(/\/+$/, '');
+    if (!url.endsWith('/api/v1')) {
+      url = `${url}/api/v1`;
+    }
+    return url;
+  }
+  // In production environment (Render static site or production build)
+  if ((import.meta as any).env?.PROD || (typeof window !== 'undefined' && window.location.hostname.includes('render.com'))) {
+    return 'https://studyhub-backend-hu9p.onrender.com/api/v1';
+  }
+  // Local development fallback to Vite proxy
+  return '/api/v1';
+};
+
+export const BASE_URL = getBaseUrl();
+
+export const getDownloadUrl = (resourceId: number | string): string => {
+  return `${BASE_URL}/resources/${resourceId}/download`;
+};
 
 const api = axios.create({
   baseURL: BASE_URL,

@@ -24,7 +24,8 @@ import {
   submitReview,
   toggleHelpfulVote,
   toggleBookmark,
-  toggleUsefulVote
+  toggleUsefulVote,
+  getDownloadUrl
 } from '../services/api';
 import api from '../services/api';
 import { Resource, Review } from '../types';
@@ -226,7 +227,7 @@ export const ResourceDetailPage: React.FC = () => {
 
             {resource.filePath && (
               <a
-                href={`/api/v1/resources/${resource.id}/download`}
+                href={getDownloadUrl(resource.id)}
                 className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-sm text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 transition-colors"
               >
                 <Download size={16} /> Download PDF Notes
@@ -256,7 +257,7 @@ export const ResourceDetailPage: React.FC = () => {
             <span className="text-xs text-slate-400 font-medium">StudyHub Native Document Reader</span>
           </div>
           <iframe
-            src={`/api/v1/resources/${resource.id}/download#toolbar=0`}
+            src={`${getDownloadUrl(resource.id)}#toolbar=0`}
             title="PDF Preview"
             className="w-full h-[540px] rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50"
           />

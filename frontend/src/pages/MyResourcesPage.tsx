@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import {
   BookOpen, Trash2, Edit3, ExternalLink, Download, RefreshCw, AlertCircle
 } from 'lucide-react';
-import api from '../services/api';
+import api, { getDownloadUrl } from '../services/api';
 import { Resource } from '../types';
 import { useAuth } from '../context/AuthContext';
 import { ReliabilityChip } from '../components/ReliabilityChip';
@@ -115,7 +115,7 @@ export const MyResourcesPage: React.FC = () => {
                   </a>
                 )}
                 {r.filePath && (
-                  <a href={`/api/v1/resources/${r.id}/download`}
+                  <a href={getDownloadUrl(r.id)}
                     className="btn btn-secondary btn-sm" title="Download file">
                     <Download size={14} />
                   </a>

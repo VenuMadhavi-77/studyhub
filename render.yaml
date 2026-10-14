@@ -32,7 +32,7 @@ services:
       - key: DB_PASSWORD
         sync: false
       - key: CORS_ALLOWED_ORIGINS
-        value: "*"
+        value: "https://studyhub-frontend-yxlr.onrender.com,https://studyhub-frontend.onrender.com,http://localhost:3000,http://localhost:5173,*"
       - key: GEMINI_API_KEY
         sync: false
 
@@ -48,7 +48,7 @@ services:
     pullRequestPreviewsEnabled: false
     envVars:
       - key: VITE_API_URL
-        sync: false
+        value: https://studyhub-backend-hu9p.onrender.com/api/v1
     routes:
       - type: rewrite
         source: /*

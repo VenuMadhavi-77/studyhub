@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
@@ -15,11 +14,19 @@ import { useAuth } from '../context/AuthContext';
 import { Department } from '../types';
 import api from '../services/api';
 
+const FALLBACK_DEPARTMENTS: Department[] = [
+  { id: 1, name: 'Computer Science & Engineering', code: 'CSE', active: true },
+  { id: 2, name: 'Information Technology', code: 'IT', active: true },
+  { id: 3, name: 'Electronics & Communication Engineering', code: 'ECE', active: true },
+  { id: 4, name: 'Mechanical Engineering', code: 'MECH', active: true }
+];
+
 export const RegisterPage: React.FC = () => {
   const navigate = useNavigate();
   const { register } = useAuth();
 
   const [departments, setDepartments] = useState<Department[]>([]);
+  const [departmentsLoading, setDepartmentsLoading] = useState(true);
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -28,48 +35,32 @@ export const RegisterPage: React.FC = () => {
   const [semester, setSemester] = useState<number | ''>('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [departmentsLoading, setDepartmentsLoading] = useState(true);
 
   useEffect(() => {
-    let cancelled = false;
+    let isMounted = true;
+    setDepartmentsLoading(true);
 
-    const loadDepartments = async () => {
-      setDepartmentsLoading(true);
-
-      try {
-        const response = await api.get('/taxonomy/departments');
-
-        console.log('Departments API response:', response.data);
-
-        const data = response.data?.data;
-
-        if (!Array.isArray(data)) {
-          throw new Error('Unexpected departments response format');
+    api.get('/taxonomy/departments')
+      .then((res) => {
+        if (!isMounted) return;
+        const list = res.data?.data;
+        if (Array.isArray(list) && list.length > 0) {
+          setDepartments(list);
+        } else {
+          setDepartments(FALLBACK_DEPARTMENTS);
         }
-
-        if (!cancelled) {
-          setDepartments(data);
-        }
-      } catch (err) {
-        console.error('Failed to load departments:', err);
-
-        if (!cancelled) {
-          setDepartments([]);
-          setError(
-            'Unable to load departments. Please refresh the page and try again.'
-          );
-        }
-      } finally {
-        if (!cancelled) {
-          setDepartmentsLoading(false);
-        }
-      }
-    };
-
-    loadDepartments();
+      })
+      .catch((err) => {
+        if (!isMounted) return;
+        console.warn('Backend departments fetch failed, using academic departments fallback:', err);
+        setDepartments(FALLBACK_DEPARTMENTS);
+      })
+      .finally(() => {
+        if (isMounted) setDepartmentsLoading(false);
+      });
 
     return () => {
-      cancelled = true;
+      isMounted = false;
     };
   }, []);
 
@@ -111,16 +102,16 @@ export const RegisterPage: React.FC = () => {
       }
     } catch (err: any) {
       const resp = err.response?.data;
-
-      if (resp?.details && typeof resp.details === 'object') {
+      if (resp?.validationErrors && typeof resp.validationErrors === 'object') {
+        const firstError = Object.values(resp.validationErrors)[0];
+        setError(String(firstError));
+      } else if (resp?.details && typeof resp.details === 'object') {
         const firstError = Object.values(resp.details)[0];
         setError(String(firstError));
       } else if (resp?.message) {
         setError(resp.message);
       } else {
-        setError(
-          'Registration failed. Please check your details and try again.'
-        );
+        setError('Registration failed. Institutional email may already be registered or details are invalid.');
       }
     } finally {
       setLoading(false);
@@ -144,7 +135,7 @@ export const RegisterPage: React.FC = () => {
             </div>
 
             <div className="space-y-2">
-              <h2 className="text-2xl sm:text-3xl font-extrabold font-heading leading-tight">
+              <h2 className="text-2xl font-bold tracking-tight font-heading">
                 Join the Campus Learning Community
               </h2>
               <p className="text-xs sm:text-sm text-indigo-200 leading-relaxed">
@@ -154,7 +145,7 @@ export const RegisterPage: React.FC = () => {
               </p>
             </div>
 
-            <div className="space-y-3 pt-4">
+            <div className="space-y-3 pt-2">
               <div className="flex items-center gap-2.5 text-xs text-indigo-100 font-medium">
                 <CheckCircle2 size={16} className="text-amber-400 flex-shrink-0" />
                 <span>Personalized algorithmic feed for your semester subjects</span>
@@ -235,7 +226,7 @@ export const RegisterPage: React.FC = () => {
                 <select
                   required
                   value={departmentId}
-                  disabled={departmentsLoading || departments.length === 0}
+                  disabled={departmentsLoading && departments.length === 0}
                   onChange={(e) =>
                     setDepartmentId(
                       e.target.value ? Number(e.target.value) : ''
@@ -244,11 +235,9 @@ export const RegisterPage: React.FC = () => {
                   className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 focus:border-indigo-500 focus:outline-none disabled:opacity-60"
                 >
                   <option value="">
-                    {departmentsLoading
+                    {departmentsLoading && departments.length === 0
                       ? 'Loading departments...'
-                      : departments.length === 0
-                        ? 'No departments available'
-                        : 'Select Dept'}
+                      : 'Select Dept'}
                   </option>
                   {departments.map((d) => (
                     <option key={d.id} value={d.id}>
@@ -297,7 +286,7 @@ export const RegisterPage: React.FC = () => {
 
             <button
               type="submit"
-              disabled={loading || departmentsLoading || departments.length === 0}
+              disabled={loading || (departmentsLoading && departments.length === 0)}
               className="w-full py-2.5 rounded-xl font-bold text-sm text-white bg-indigo-600 hover:bg-indigo-700 shadow-md shadow-indigo-600/30 transition-transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-60 flex items-center justify-center gap-2 mt-3"
             >
               {loading ? (

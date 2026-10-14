@@ -19,7 +19,7 @@ import {
   User,
   Star
 } from 'lucide-react';
-import { getResources, toggleBookmark } from '../services/api';
+import { getResources, toggleBookmark, getDownloadUrl } from '../services/api';
 import api from '../services/api';
 import { Resource, SourcePlatform, ContentLevel, ContentLanguage } from '../types';
 import { PlatformBadge, LevelBadge, LanguageBadge } from '../components/Badge';
@@ -388,7 +388,7 @@ export const BrowsePage: React.FC = () => {
 
                       {resource.filePath ? (
                         <a
-                          href={`/api/v1/resources/${resource.id}/download`}
+                          href={getDownloadUrl(resource.id)}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="py-2 px-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm transition-transform hover:scale-105"

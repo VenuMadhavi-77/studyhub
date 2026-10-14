@@ -38,20 +38,39 @@ export const UploadResourcePage: React.FC = () => {
   const [errorMsg, setErrorMsg] = useState('');
   const [successId, setSuccessId] = useState<number | null>(null);
 
+const FALLBACK_DEPARTMENTS: Department[] = [
+  { id: 1, name: 'Computer Science & Engineering', code: 'CSE', active: true },
+  { id: 2, name: 'Information Technology', code: 'IT', active: true },
+  { id: 3, name: 'Electronics & Communication Engineering', code: 'ECE', active: true },
+  { id: 4, name: 'Mechanical Engineering', code: 'MECH', active: true }
+];
+
   useEffect(() => {
+    let isMounted = true;
     api.get('/taxonomy/departments')
       .then((res) => {
-        const depts = res.data.data || [];
-        setDepartments(depts);
-        if (depts.length > 0 && !departmentId) {
-          // Default to user's registered department, or CSE, or first department
-          const preferred = depts.find((d: any) => d.id === user?.departmentId)
-                         || depts.find((d: any) => d.code === 'CSE')
-                         || depts[0];
+        if (!isMounted) return;
+        const depts = res.data?.data;
+        const list = (Array.isArray(depts) && depts.length > 0) ? depts : FALLBACK_DEPARTMENTS;
+        setDepartments(list);
+        if (list.length > 0 && !departmentId) {
+          const preferred = list.find((d: any) => d.id === user?.departmentId)
+                         || list.find((d: any) => d.code === 'CSE')
+                         || list[0];
           setDepartmentId(preferred.id);
         }
       })
-      .catch((err) => console.error('Failed to load departments', err));
+      .catch((err) => {
+        if (!isMounted) return;
+        console.warn('Failed to load departments from API, using fallback:', err);
+        setDepartments(FALLBACK_DEPARTMENTS);
+        if (!departmentId) {
+          const preferred = FALLBACK_DEPARTMENTS.find((d: any) => d.id === user?.departmentId)
+                         || FALLBACK_DEPARTMENTS[0];
+          setDepartmentId(preferred.id);
+        }
+      });
+    return () => { isMounted = false; };
   }, [user]);
 
   useEffect(() => {

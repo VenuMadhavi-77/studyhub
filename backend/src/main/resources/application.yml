@@ -33,7 +33,7 @@ studyhub:
     bootstrap-password: ${ADMIN_BOOTSTRAP_PASSWORD:AdminStudyHub#2026}
     bootstrap-name: ${ADMIN_BOOTSTRAP_NAME:System Administrator}
   cors:
-    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173,http://localhost:3000,http://127.0.0.1:5173}
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173,http://localhost:3000,http://127.0.0.1:5173,https://studyhub-frontend-yxlr.onrender.com,https://studyhub-frontend.onrender.com,*}
   storage:
     type: ${STORAGE_TYPE:LOCAL}
     local-path: ${STORAGE_LOCAL_PATH:./uploads}

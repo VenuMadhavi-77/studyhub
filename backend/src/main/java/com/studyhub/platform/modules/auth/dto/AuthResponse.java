@@ -10,9 +10,14 @@ public record AuthResponse(
         Long userId,
         String email,
         String fullName,
-        Role role
+        Role role,
+        UserProfileResponse user
 ) {
+    public static AuthResponse of(String accessToken, String refreshToken, Long expiresInMs, Long userId, String email, String fullName, Role role, UserProfileResponse user) {
+        return new AuthResponse(accessToken, refreshToken, "Bearer", expiresInMs, userId, email, fullName, role, user);
+    }
+
     public static AuthResponse of(String accessToken, String refreshToken, Long expiresInMs, Long userId, String email, String fullName, Role role) {
-        return new AuthResponse(accessToken, refreshToken, "Bearer", expiresInMs, userId, email, fullName, role);
+        return new AuthResponse(accessToken, refreshToken, "Bearer", expiresInMs, userId, email, fullName, role, null);
     }
 }

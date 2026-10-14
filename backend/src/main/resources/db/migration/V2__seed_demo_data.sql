@@ -1,4 +1,3 @@
-
 -- STUDYHUB DEMO SEED DATA (Flyway Migration V2)
 
 -- 1. Departments

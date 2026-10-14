@@ -3,7 +3,11 @@
  * Automatically selects wss:// or ws:// depending on API URL protocol or current window location
  */
 export const getWebSocketUrl = (endpoint: string = '/ws-studyhub'): string => {
-  const apiUrl = (import.meta as any).env?.VITE_API_URL || '';
+  let apiUrl = (import.meta as any).env?.VITE_API_URL || '';
+
+  if (!apiUrl && ((import.meta as any).env?.PROD || (typeof window !== 'undefined' && window.location.hostname.includes('render.com')))) {
+    apiUrl = 'https://studyhub-backend-hu9p.onrender.com/api/v1';
+  }
 
   if (apiUrl.startsWith('https://')) {
     const host = apiUrl.replace(/^https:\/\//, '').replace(/\/api.*$/, '');
@@ -25,7 +29,11 @@ export const getWebSocketUrl = (endpoint: string = '/ws-studyhub'): string => {
 };
 
 export const getNativeWsUrl = (endpoint: string = '/ws-studyhub'): string => {
-  const apiUrl = (import.meta as any).env?.VITE_API_URL || '';
+  let apiUrl = (import.meta as any).env?.VITE_API_URL || '';
+
+  if (!apiUrl && ((import.meta as any).env?.PROD || (typeof window !== 'undefined' && window.location.hostname.includes('render.com')))) {
+    apiUrl = 'https://studyhub-backend-hu9p.onrender.com/api/v1';
+  }
 
   if (apiUrl.startsWith('https://')) {
     const host = apiUrl.replace(/^https:\/\//, '').replace(/\/api.*$/, '');

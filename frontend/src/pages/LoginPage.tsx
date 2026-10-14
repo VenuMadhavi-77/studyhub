@@ -40,7 +40,11 @@ export const LoginPage: React.FC = () => {
         navigate('/dashboard');
       }
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Invalid institutional email or password');
+      if (err.code === 'ECONNABORTED' || err.message?.includes('Network Error') || !err.response) {
+        setError('Connection in progress. Cloud backend may take 30-50 seconds to wake up from cold sleep. Please retry in a moment.');
+      } else {
+        setError(err.response?.data?.message || 'Invalid institutional email or password');
+      }
     } finally {
       setLoading(false);
     }
