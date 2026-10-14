@@ -9,16 +9,13 @@ import {
   Lock,
   User,
   GraduationCap,
-  Database,
   Building2,
   Calendar,
-  Sparkles,
-  ArrowRight,
-  ShieldCheck
+  ArrowRight
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { Department } from '../types';
-import api, { getConnectionInfo } from '../services/api';
+import api from '../services/api';
 
 const FALLBACK_DEPARTMENTS: Department[] = [
   { id: 1, name: 'Computer Science & Engineering', code: 'CSE', active: true },
@@ -46,8 +43,6 @@ export const RegisterPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [successNotice, setSuccessNotice] = useState(false);
 
-  const connectionInfo = getConnectionInfo();
-
   useEffect(() => {
     let isMounted = true;
     api.get('/taxonomy/departments')
@@ -71,16 +66,6 @@ export const RegisterPage: React.FC = () => {
     };
   }, []);
 
-  const fillRandomStudent = () => {
-    const randomSuffix = Math.floor(100 + Math.random() * 900);
-    setFullName(`Anurag Student ${randomSuffix}`);
-    setEmail(`student.${randomSuffix}@anurag.edu.in`);
-    setPassword('Password123#');
-    setDepartmentId(1);
-    setSemester(3);
-    setError('');
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -93,7 +78,6 @@ export const RegisterPage: React.FC = () => {
     setLoading(true);
 
     try {
-      console.log('Initiating registration in database for:', email.trim());
       const user = await register(
         fullName.trim(),
         email.trim(),
@@ -122,9 +106,9 @@ export const RegisterPage: React.FC = () => {
       } else if (resp?.message) {
         setError(resp.message);
       } else if (err.code === 'ECONNABORTED' || err.message?.includes('Network Error') || !err.response) {
-        setError('Cannot connect to backend server. Make sure your backend is running at http://localhost:8080.');
+        setError('Cannot connect to backend server. Please verify your connection.');
       } else {
-        setError('Registration failed. This email may already be registered in the database.');
+        setError('Registration failed. This email may already be registered.');
       }
     } finally {
       setLoading(false);
@@ -135,79 +119,48 @@ export const RegisterPage: React.FC = () => {
     <div className="min-h-[calc(100vh-4.25rem)] flex items-center justify-center p-4 sm:p-6 lg:p-8 bg-slate-50 dark:bg-[#070B14]">
       <div className="max-w-5xl w-full grid grid-cols-1 lg:grid-cols-12 rounded-3xl bg-white dark:bg-[#0D1322] border border-slate-200/90 dark:border-slate-800 shadow-2xl overflow-hidden">
 
-        {/* Left: Anurag InStacks Information Panel (5 cols) */}
+        {/* Left: StudyHub Information Panel (5 cols) */}
         <div className="lg:col-span-5 p-8 sm:p-10 bg-gradient-to-br from-[#0A1128] via-[#001F54] to-[#121B3A] text-white flex flex-col justify-between relative overflow-hidden">
           <div className="space-y-6 relative z-10">
-            <div className="space-y-2">
+            <div className="space-y-3">
               <div className="flex items-center gap-2">
-                <span className="px-2.5 py-1 rounded-lg bg-amber-400 text-slate-950 text-[10px] font-black uppercase tracking-wider flex items-center gap-1 shadow-sm">
-                  <GraduationCap size={13} />
-                  ANURAG UNIVERSITY
+                <span className="px-2.5 py-1 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-400/30 text-[10px] font-extrabold uppercase tracking-wider flex items-center gap-1.5 shadow-sm">
+                  <GraduationCap size={14} className="text-amber-400" />
+                  StudyHub
                 </span>
-                <span className="px-2.5 py-1 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-400/30 text-[10px] font-extrabold uppercase tracking-wider">
-                  InStacks Portal
+                <span className="px-2.5 py-1 rounded-lg bg-white/10 text-slate-200 text-[10px] font-bold uppercase tracking-wider">
+                  Academic Portal
                 </span>
               </div>
               <h1 className="text-2xl sm:text-3xl font-black font-heading tracking-tight text-white leading-tight">
                 Student Account Registration
               </h1>
               <p className="text-xs text-slate-300 leading-relaxed">
-                Register with your Anurag University credentials to unlock semester-specific syllabus, laboratory problem sets, AI doubts, and placement tracking.
+                Join your university academic knowledge repository to access department syllabus, peer-reviewed notes, AI doubt resolution, and collaborative study rooms.
               </p>
             </div>
 
-            <div className="space-y-3 pt-1">
+            <div className="space-y-3 pt-2">
               <div className="flex items-center gap-2.5 text-xs text-slate-200 font-medium">
                 <CheckCircle2 size={16} className="text-cyan-400 flex-shrink-0" />
-                <span>Personalized feed matched to your department & semester</span>
-              </div>
-              <div className="flex items-center gap-2.5 text-xs text-slate-200 font-medium">
-                <CheckCircle2 size={16} className="text-cyan-400 flex-shrink-0" />
-                <span>Real-time code compilation and DSA assessment tracker</span>
+                <span>Personalized curriculum matched to your department & semester</span>
               </div>
               <div className="flex items-center gap-2.5 text-xs text-slate-200 font-medium">
                 <CheckCircle2 size={16} className="text-cyan-400 flex-shrink-0" />
-                <span>Direct record storage in connected institution database</span>
+                <span>Peer-reviewed notes, lab solutions & previous exams</span>
               </div>
-            </div>
-
-            {/* Quick Autofill Helper */}
-            <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-[11px] font-bold text-amber-300 flex items-center gap-1.5">
-                  <Sparkles size={13} /> Instant Test Helper
-                </span>
-                <button
-                  type="button"
-                  onClick={fillRandomStudent}
-                  className="px-2.5 py-1 rounded-lg bg-amber-400 hover:bg-amber-300 text-slate-950 text-[11px] font-bold transition-all"
-                >
-                  Autofill Details
-                </button>
+              <div className="flex items-center gap-2.5 text-xs text-slate-200 font-medium">
+                <CheckCircle2 size={16} className="text-cyan-400 flex-shrink-0" />
+                <span>24/7 AI tutor for instant doubt explanations and formula sheets</span>
               </div>
-              <p className="text-[10px] text-slate-300">
-                Generate a ready-to-register student account with one click to test immediate database persistence.
-              </p>
-            </div>
-
-            {/* Database target indicator */}
-            <div className="p-3 rounded-2xl bg-slate-900/90 border border-emerald-500/30 text-slate-300 text-xs space-y-1">
-              <div className="flex items-center justify-between text-emerald-400 font-bold text-[11px]">
-                <span className="flex items-center gap-1.5">
-                  <Database size={13} />
-                  Database Persistence Target:
-                </span>
-                <span className="text-[10px] uppercase font-mono px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800">
-                  {connectionInfo.isLocal ? 'LOCAL DB' : 'LIVE DB'}
-                </span>
+              <div className="flex items-center gap-2.5 text-xs text-slate-200 font-medium">
+                <CheckCircle2 size={16} className="text-cyan-400 flex-shrink-0" />
+                <span>Synchronized study whiteboard and collaborative focus rooms</span>
               </div>
-              <p className="text-[11px] text-slate-300">
-                Target endpoint: <span className="font-mono text-cyan-300">{connectionInfo.url}</span>
-              </p>
             </div>
           </div>
 
-          <div className="pt-6 relative z-10 text-xs text-slate-400 border-t border-white/10 flex items-center justify-between">
+          <div className="pt-8 relative z-10 text-xs text-slate-400 border-t border-white/10 flex items-center justify-between">
             <span>Already registered?</span>
             <Link to="/login" className="font-bold text-cyan-400 hover:underline">
               Sign In to Portal →
@@ -261,14 +214,14 @@ export const RegisterPage: React.FC = () => {
 
             <div className="space-y-1">
               <label className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-                <Mail size={13} className="text-indigo-600 dark:text-cyan-400" /> Institutional Email or Roll No
+                <Mail size={13} className="text-indigo-600 dark:text-cyan-400" /> University Email
               </label>
               <input
                 type="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="e.g. 23au1a0501@anurag.edu.in"
+                placeholder="e.g. student@university.edu"
                 className="w-full px-4 py-2.5 text-sm rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:border-indigo-600 dark:focus:border-cyan-400 focus:bg-white dark:focus:bg-slate-900 focus:outline-none transition-all"
               />
             </div>
@@ -336,14 +289,14 @@ export const RegisterPage: React.FC = () => {
               ) : (
                 <UserPlus size={16} />
               )}
-              {loading ? 'Saving User to Database...' : 'Register Student & Save to Database'}
+              {loading ? 'Creating Student Account...' : 'Create Student Account'}
             </button>
           </form>
 
           <div className="pt-2 text-center text-xs text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-slate-800 flex items-center justify-center gap-1.5">
             <span>Already have an account?</span>
             <Link to="/login" className="font-bold text-indigo-600 dark:text-cyan-400 hover:underline flex items-center gap-1">
-              Sign In to InStacks <ArrowRight size={13} />
+              Sign In to StudyHub <ArrowRight size={13} />
             </Link>
           </div>
         </div>

@@ -65,7 +65,7 @@ export const Navbar: React.FC = () => {
     <header className="sticky top-0 z-40 bg-white/95 dark:bg-[#0A0F1D]/95 backdrop-blur-md border-b border-slate-200/90 dark:border-[#1E293B] transition-colors shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-[4.5rem] flex items-center justify-between gap-4">
         
-        {/* Anurag University + InStacks Brand Logo */}
+        {/* StudyHub Brand Logo */}
         <Link to="/" className="flex items-center gap-3 flex-shrink-0 group">
           <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-[#001F54] via-indigo-600 to-cyan-500 text-white flex items-center justify-center shadow-md shadow-indigo-600/20 group-hover:scale-105 transition-transform border border-cyan-400/30">
             <GraduationCap size={22} className="text-amber-300" />
@@ -73,15 +73,15 @@ export const Navbar: React.FC = () => {
           <div>
             <div className="flex items-center gap-1.5">
               <span className="font-black text-lg tracking-tight text-slate-900 dark:text-white font-heading">
-                ANURAG <span className="text-cyan-600 dark:text-cyan-400">INSTACKS</span>
+                STUDY<span className="text-cyan-600 dark:text-cyan-400">HUB</span>
               </span>
               <span className="text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded bg-amber-400/10 text-amber-600 dark:text-amber-400 border border-amber-400/30">
-                AU-PORTAL
+                PORTAL
               </span>
             </div>
             <div className="flex items-center gap-2">
               <p className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">
-                Learning • Assessments • Career Readiness
+                Academic Knowledge & Study Ecosystem
               </p>
             </div>
           </div>
@@ -95,7 +95,7 @@ export const Navbar: React.FC = () => {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search DSA, DBMS, OS, InStacks coding labs, notes..."
+              placeholder="Search DSA, DBMS, OS, notes, previous papers..."
               className="w-full pl-9 pr-4 py-2 rounded-xl text-xs bg-slate-100 dark:bg-[#131B2E] text-slate-900 dark:text-slate-100 placeholder-slate-400 border border-transparent focus:border-cyan-500 focus:bg-white dark:focus:bg-[#0D1322] focus:outline-none transition-all shadow-inner"
             />
           </div>

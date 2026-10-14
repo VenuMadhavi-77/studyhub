@@ -78,16 +78,16 @@ export const Sidebar: React.FC<SidebarProps> = () => {
   return (
     <aside className="w-64 flex-shrink-0 hidden md:flex flex-col justify-between h-[calc(100vh-4.5rem)] sticky top-[4.5rem] bg-white/95 dark:bg-[#0A0F1D]/95 backdrop-blur-md border-r border-slate-200/90 dark:border-[#1E293B] p-3.5 z-20 overflow-y-auto">
       <div className="space-y-5">
-        {/* Anurag Institutional Pill */}
+        {/* StudyHub Portal Pill */}
         <div className="px-3 py-2 rounded-xl bg-gradient-to-r from-[#001F54] to-indigo-950 text-white border border-cyan-500/20 shadow-sm flex items-center justify-between">
           <div className="flex items-center gap-2">
             <GraduationCap size={16} className="text-amber-400" />
             <div className="text-left">
-              <p className="text-[11px] font-black tracking-wide text-white uppercase">Anurag University</p>
-              <p className="text-[9px] text-cyan-300 font-mono">InStacks Student Stack</p>
+              <p className="text-[11px] font-black tracking-wide text-white uppercase">StudyHub</p>
+              <p className="text-[9px] text-cyan-300 font-mono">Academic Portal</p>
             </div>
           </div>
-          <span className="text-[9px] px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 font-bold">AU</span>
+          <span className="text-[9px] px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 font-bold">PORTAL</span>
         </div>
 
         {isAdmin ? (
@@ -160,7 +160,7 @@ export const Sidebar: React.FC<SidebarProps> = () => {
         )}
       </div>
 
-      {/* InStacks Mini Streak / Lab Card - Students Only */}
+      {/* Study Streak Card - Students Only */}
       {!isAdmin && (
         <div className="mt-4 p-3 rounded-2xl bg-gradient-to-br from-indigo-50 to-cyan-50/60 dark:from-[#131B2E] dark:to-[#0A1128] border border-indigo-100 dark:border-cyan-900/40">
           <div className="flex items-center justify-between mb-2">
@@ -169,7 +169,7 @@ export const Sidebar: React.FC<SidebarProps> = () => {
                 <Flame size={15} className="animate-pulse" />
               </div>
               <div>
-                <p className="text-xs font-bold text-slate-900 dark:text-slate-100">AU Study Streak</p>
+                <p className="text-xs font-bold text-slate-900 dark:text-slate-100">Daily Study Streak</p>
                 <p className="text-[10px] text-slate-500 dark:text-slate-400">Keep daily habit alive</p>
               </div>
             </div>

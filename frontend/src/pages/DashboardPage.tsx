@@ -88,19 +88,16 @@ export const DashboardPage: React.FC = () => {
 
   return (
     <div className="space-y-8 max-w-7xl mx-auto pb-12">
-      {/* 1. Anurag InStacks Student Portal Header Banner */}
+      {/* 1. Student Portal Header Banner */}
       <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#0A1128] via-[#001F54] to-[#121B3A] text-white p-6 sm:p-8 shadow-xl border border-cyan-500/20">
         <div className="relative z-10 max-w-3xl space-y-4">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="px-2.5 py-1 rounded-lg bg-amber-400 text-slate-950 text-[10px] font-black uppercase tracking-wider flex items-center gap-1 shadow-sm">
-              <GraduationCap size={13} />
-              ANURAG UNIVERSITY
+            <span className="px-2.5 py-1 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-400/30 text-[10px] font-extrabold uppercase tracking-wider flex items-center gap-1.5 shadow-sm">
+              <GraduationCap size={14} className="text-amber-400" />
+              StudyHub
             </span>
-            <span className="px-2.5 py-1 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-400/30 text-[10px] font-extrabold uppercase tracking-wider">
-              InStacks Student Hub
-            </span>
-            <span className="px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-[10px] font-mono font-bold flex items-center gap-1">
-              <Database size={11} /> {connectionInfo.isLocal ? 'Local DB Connected' : 'Live DB'}
+            <span className="px-2.5 py-1 rounded-lg bg-white/10 text-slate-200 text-[10px] font-bold uppercase tracking-wider">
+              Student Hub
             </span>
           </div>
 
@@ -158,7 +155,7 @@ export const DashboardPage: React.FC = () => {
         <div className="absolute right-1/4 -top-16 w-64 h-64 rounded-full bg-indigo-500/20 blur-3xl pointer-events-none" />
       </div>
 
-      {/* 2. InStacks Performance Metrics Strip */}
+      {/* 2. Academic Performance Metrics Strip */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#0D1322] border border-slate-200/80 dark:border-slate-800 shadow-sm flex items-center gap-4">
           <div className="w-12 h-12 rounded-2xl bg-amber-50 dark:bg-amber-950/40 text-amber-500 flex items-center justify-center font-bold text-xl shadow-inner border border-amber-300/20">
@@ -209,16 +206,16 @@ export const DashboardPage: React.FC = () => {
         </div>
       </div>
 
-      {/* 3. InStacks Quick Action Modules */}
+      {/* 3. Learning & Assessment Modules */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Terminal size={18} className="text-cyan-500" />
             <h2 className="text-lg font-black text-slate-900 dark:text-white font-heading">
-              InStacks Learning & Assessment Modules
+              Learning & Assessment Modules
             </h2>
           </div>
-          <span className="text-xs text-slate-400">Anurag University Digital Stack</span>
+          <span className="text-xs text-slate-400">Academic Digital Stack</span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -239,7 +236,7 @@ export const DashboardPage: React.FC = () => {
                 AI Syllabus & Doubt Solver
               </h3>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                Ask doubts on OS, DBMS, DSA, or get step-by-step code explanations aligned with AU curriculum.
+                Ask doubts on OS, DBMS, DSA, or get step-by-step code explanations aligned with your curriculum.
               </p>
             </div>
             <div className="text-xs font-bold text-cyan-600 dark:text-cyan-400 flex items-center gap-1 group-hover:translate-x-1 transition-transform">
@@ -286,7 +283,7 @@ export const DashboardPage: React.FC = () => {
             </div>
             <div>
               <h3 className="font-bold text-sm text-slate-900 dark:text-white group-hover:text-amber-400 transition-colors">
-                Anurag Doubt Clearance Forum
+                Student Doubt Clearance Forum
               </h3>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                 Post questions, get verified faculty & peer answers, and upvote the top academic solutions.
@@ -356,7 +353,7 @@ export const DashboardPage: React.FC = () => {
               Placement Readiness & Practice Catalog
             </h2>
             <p className="text-xs text-slate-500 dark:text-slate-400">
-              Curated materials from LeetCode, YouTube, PW Skills, and Anurag faculty
+              Curated materials from LeetCode, YouTube, PW Skills, and academic faculty
             </p>
           </div>
           <Link to="/browse?q=placement" className="text-xs font-bold text-cyan-600 dark:text-cyan-400 hover:underline">

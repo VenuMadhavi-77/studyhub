@@ -25,13 +25,13 @@ export const HomePage: React.FC = () => {
   const features = [
     {
       icon: <Terminal className="text-cyan-500" size={26} />,
-      title: 'InStacks Coding Labs & DSA',
+      title: 'Interactive Coding Labs & DSA',
       desc: 'Practice Data Structures, Algorithms, and company-specific coding assessments with real-time test cases and multi-language support.',
     },
     {
       icon: <Sparkles className="text-amber-400" size={26} />,
       title: '24/7 AI Doubt Resolution',
-      desc: 'Instant Gemini AI-powered tutor that understands Anurag University syllabus, textbook topics, and provides exam formulas.',
+      desc: 'Instant Gemini AI-powered tutor that understands curriculum syllabus, textbook topics, and provides exam formulas.',
     },
     {
       icon: <Compass className="text-indigo-500" size={26} />,
@@ -61,20 +61,20 @@ export const HomePage: React.FC = () => {
       <section className="relative pt-10 pb-8 text-center space-y-6">
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-900 text-white border border-cyan-500/30 text-xs font-bold shadow-md">
           <GraduationCap size={15} className="text-amber-400" />
-          <span className="text-cyan-300">ANURAG UNIVERSITY</span>
+          <span className="text-cyan-300">STUDYHUB</span>
           <span className="text-slate-400">•</span>
-          <span className="text-slate-200">INSTACKS PORTAL</span>
+          <span className="text-slate-200">ACADEMIC ECOSYSTEM</span>
         </div>
 
         <h1 className="text-4xl sm:text-6xl font-black text-slate-900 dark:text-white font-heading tracking-tight max-w-4xl mx-auto leading-[1.15]">
           Next-Gen Learning, Assessment & Career Readiness for{' '}
           <span className="bg-gradient-to-r from-cyan-500 via-indigo-500 to-amber-400 bg-clip-text text-transparent">
-            Anurag University
+            Engineering Students
           </span>
         </h1>
 
         <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed">
-          The official unified digital platform for engineering students. Comprehensive courseware, AI doubt clearance, coding labs, and campus placement acceleration.
+          The unified digital platform for university students. Comprehensive courseware, AI doubt clearance, coding labs, and campus placement acceleration.
         </p>
 
         <div className="flex flex-wrap items-center justify-center gap-4 pt-3">
@@ -129,7 +129,7 @@ export const HomePage: React.FC = () => {
             Built for Academic Excellence & Placements
           </h2>
           <p className="text-sm text-slate-500 dark:text-slate-400">
-            Everything an Anurag University student needs from Semester 1 through Campus Placement drives.
+            Everything an engineering student needs from Semester 1 through Campus Placement drives.
           </p>
         </div>
 

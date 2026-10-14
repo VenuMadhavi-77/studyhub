@@ -33,12 +33,12 @@
     --color-warning: #f59e0b;
     --color-danger: #ef4444;
 
-    /* Anurag InStacks Portal Colors */
-    --instacks-navy: #0A1128;
-    --instacks-blue: #001F54;
-    --instacks-cyan: #00F0FF;
-    --instacks-emerald: #10B981;
-    --instacks-gold: #FFB703;
+    /* StudyHub Portal Palette */
+    --portal-navy: #0A1128;
+    --portal-blue: #001F54;
+    --portal-cyan: #00F0FF;
+    --portal-emerald: #10B981;
+    --portal-gold: #FFB703;
   }
 
   .dark {
@@ -83,16 +83,16 @@
   }
 }
 
-/* Anurag InStacks UI Utility Classes */
-.instacks-glow {
+/* StudyHub UI Utility Classes */
+.portal-glow {
   box-shadow: 0 0 25px -5px rgba(99, 102, 241, 0.35);
 }
 
-.instacks-cyan-glow {
+.portal-cyan-glow {
   box-shadow: 0 0 25px -5px rgba(6, 182, 212, 0.4);
 }
 
-.instacks-badge {
+.portal-badge {
   background: linear-gradient(135deg, rgba(79, 70, 229, 0.15) 0%, rgba(6, 182, 212, 0.15) 100%);
   border: 1px solid rgba(99, 102, 241, 0.3);
 }
