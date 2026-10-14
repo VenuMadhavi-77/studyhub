@@ -55,5 +55,11 @@ test_upload.pdf
 *.sln
 *.sw?
 .DS_Store
+# Local scripts and temporary test files
+*.bat
+*.cmd
+mysql-init.sql
+debug_suite.js
+verify_deployment.js
 uploads/
 mysql_data/
