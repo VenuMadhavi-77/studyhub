@@ -13,8 +13,6 @@ import com.studyhub.platform.modules.taxonomy.entity.Department;
 import com.studyhub.platform.modules.taxonomy.repository.DepartmentRepository;
 import com.studyhub.platform.security.JwtTokenProvider;
 import com.studyhub.platform.security.SecurityUserPrincipal;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -24,8 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class AuthService {
-
-    private static final Logger log = LoggerFactory.getLogger(AuthService.class);
 
     private final UserRepository userRepository;
     private final DepartmentRepository departmentRepository;
@@ -53,38 +49,25 @@ public class AuthService {
 
     @Transactional
     public AuthResponse register(RegisterRequest request) {
-        String cleanEmail = request.email().toLowerCase().trim();
-        if (userRepository.existsByEmail(cleanEmail)) {
+        if (userRepository.existsByEmail(request.email().toLowerCase().trim())) {
             throw new BadRequestException("An account with this email address already exists");
         }
 
         User user = new User();
-        user.setEmail(cleanEmail);
+        user.setEmail(request.email().toLowerCase().trim());
         user.setPasswordHash(passwordEncoder.encode(request.password()));
         user.setFullName(request.fullName().trim());
         user.setRole(Role.STUDENT);
         user.setStatus(UserStatus.ACTIVE);
-        user.setSemester(request.semester() != null ? request.semester() : 1);
+        user.setSemester(request.semester());
 
-        // Resilient department handling: never abort registration if department is missing
-        Department department = null;
         if (request.departmentId() != null) {
-            department = departmentRepository.findById(request.departmentId()).orElse(null);
+            Department dept = departmentRepository.findById(request.departmentId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Department", "id", request.departmentId()));
+            user.setDepartment(dept);
         }
-        if (department == null) {
-            department = departmentRepository.findAll().stream().findFirst().orElseGet(() -> {
-                Department defaultDept = new Department();
-                defaultDept.setName("Computer Science & Engineering");
-                defaultDept.setCode("CSE");
-                defaultDept.setActive(true);
-                return departmentRepository.save(defaultDept);
-            });
-        }
-        user.setDepartment(department);
 
         User savedUser = userRepository.save(user);
-        log.info("SUCCESS: User successfully registered and stored in database! ID: {}, Email: {}, Role: {}",
-                savedUser.getId(), savedUser.getEmail(), savedUser.getRole());
 
         SecurityUserPrincipal principal = SecurityUserPrincipal.create(savedUser);
         String accessToken = jwtTokenProvider.generateAccessToken(principal);
@@ -122,9 +105,6 @@ public class AuthService {
 
         String accessToken = jwtTokenProvider.generateAccessToken(principal);
         String rawRefreshToken = refreshTokenService.createRefreshToken(user);
-
-        log.info("SUCCESS: User authenticated and logged in! ID: {}, Email: {}, Role: {}",
-                user.getId(), user.getEmail(), user.getRole());
 
         return AuthResponse.of(
                 accessToken,
